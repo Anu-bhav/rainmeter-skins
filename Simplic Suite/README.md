@@ -15,15 +15,36 @@ section of each `.ini` to adjust.
 ## Readout
 
 ```
-CPU 12%          RAM 11.2/64GB
-GPU 9%           VRAM 1.5/12GB
-Download 1.2mbps Upload 0.4mbps
+CPU 12%    RAM 11.2/64GB
+GPU 9%     VRAM 1.5/12GB
+q 1.2mbps  p 0.4mbps
 ```
 
-Each value is **centred as a pair**: the left group sits on the ¼ line and
-the right group on the ¾ line. Labels are inline with their values, so the
-readout stays centred as a whole regardless of digit count — no hard-coded
-per-label X positions to drift out of alignment.
+Each readout is **one String meter** centred on `X=125` — the middle of the
+250px line — with the second half recoloured through an inline setting.
+
+That is deliberate. Centring two separate meters on their own ¼ and ¾ points
+does **not** centre the pair: `GPU 9%` is narrow while `VRAM 1.5/12GB` is
+wide, so the visual block drifts right of centre (measured 7–11px). One
+centred meter is centred by construction at any digit count.
+
+```ini
+[Readout]
+Meter=String
+StringAlign=Center
+X=125
+Text="GPU %1%    VRAM %2.1f/%3.0fGB"
+InlineSetting=Color | #FontColor2#
+InlinePattern=VRAM.*
+```
+
+**Inline settings are matched pairs.** `InlineSetting` goes with
+`InlinePattern`, `InlineSetting2` with `InlinePattern2`. Mismatching the
+numbers silently does nothing (or recolours everything), which is an easy
+way to end up with a magenta label.
+
+The Wingdings arrows on the Network skin are part of the same string via an
+inline font change, so they can no longer overlap the numbers.
 
 ## Graphs: hybrid scaling
 

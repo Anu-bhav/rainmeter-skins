@@ -144,18 +144,38 @@ I verified this empirically: with `AutoScale=1` a constant value of 12
 rendered at the top of the graph whether `MinValue`/`MaxValue` were set or
 not — AutoScale ignores them entirely.
 
-### Centred readout
+## Centred readout
 
-Labels are inline with their values and each pair is centred on the ¼ and ¾
-lines, so the readout stays centred as a whole no matter how many digits
-each number happens to have:
+Each readout is **one String meter** centred on `X=125` (the middle of the
+250px line), with the second half recoloured via an inline setting:
 
+```ini
+[Readout]
+Meter=String
+StringAlign=Center
+X=125
+Text="GPU %1%    VRAM %2.1f/%3.0fGB"
+InlineSetting=Color | #FontColor2#
+InlinePattern=VRAM.*
 ```
-│    GPU 9%      VRAM 1.5/12GB    │   ← always centred
-```
 
-This avoids the old approach of hard-coding X positions per label, which
-drifted out of alignment as soon as a value gained a digit.
+This matters because centring two separate meters on their own quarter points
+does **not** centre the pair. `GPU 9%` is narrow while `VRAM 1.5/12GB` is wide,
+so the block drifts:
+
+| Approach | Measured result |
+|---|---|
+| Two meters at X=62 / X=187 | shifted **right by 7–11px** |
+| One centred meter at X=125 | **centred** (mid 125.5 vs skin mid 125) |
+
+With one meter, centring is true by construction and stays correct at any
+digit count.
+
+**Inline settings are a matched pair.** `InlineSetting` goes with
+`InlinePattern`, and `InlineSetting2` with `InlinePattern2`. Using
+`InlineSetting` with `InlinePattern2` silently does nothing; using an
+unsuffixed `InlineSetting` alongside a suffixed pattern recolours the whole
+string, which is how the GPU label briefly turned magenta.
 
 ### Transparency
 
