@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+
+# .NET
+*.user
+*.suo
+.vs/
+
+# MinGW / Rainmeter plugin build
+*.o
+*.res
+*.dll
+*.exe
+*.pdb
+*.lib
+*.exp
+
+# Rainmeter runtime files (do not commit)
+gpu_samples.csv
+gpu_debug.ini
+dump.txt

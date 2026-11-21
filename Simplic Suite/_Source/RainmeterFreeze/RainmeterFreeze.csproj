@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <StartupObject>RainmeterFreeze.Program</StartupObject>
+    <PublishAot>true</PublishAot>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks> <!-- for LibraryImport -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>ascpixi</Authors>
+    <Version>1.1.0</Version>
+    <PackageProjectUrl>https://github.com/ascpixi/RainmeterFreeze</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ascpixi/RainmeterFreeze</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+    <ApplicationIcon>./Resources/Icon.ico</ApplicationIcon>
+    <ApplicationManifest>./Resources/RainmeterFreeze.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.NotifyIcon" Version="2.3.0" />
+  </ItemGroup>
+
+</Project>
