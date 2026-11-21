@@ -14,6 +14,8 @@ section of each `.ini` to adjust.
 
 ## Preview
 
+![All three widgets](Images/all_widgets.gif)
+
 | CPU and RAM | Gpu | Network |
 |:---:|:---:|:---:|
 | ![](Images/cpu_ram.gif) | ![](Images/gpu.gif) | ![](Images/network.gif) |

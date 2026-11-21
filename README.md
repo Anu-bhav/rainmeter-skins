@@ -9,6 +9,14 @@ third-party skins I run alongside it.**
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=flat-square)
 ![License](https://img.shields.io/badge/skins-see%20each%20folder-lightgrey?style=flat-square)
 
+<br>
+
+### The whole suite, live
+
+![CPU and RAM, GPU and Network widgets animating](Simplic Suite/Images/all_widgets.gif)
+
+*CPU & RAM · GPU · Network — real captures, 1s update, transparent.*
+
 </div>
 
 ---
