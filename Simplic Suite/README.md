@@ -12,6 +12,16 @@ Three Rainmeter widgets in one visual language: transparent background,
 All three default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.
 
+## Preview
+
+| CPU and RAM | Gpu | Network |
+|:---:|:---:|:---:|
+| ![](Images/cpu_ram.gif) | ![](Images/gpu.gif) | ![](Images/network.gif) |
+
+These are real captures, recorded with the skins running: CPU load was
+generated to move the graph, a CUDA-free D3D11 load generator exercised the
+GPU, and a file download drove the network widget.
+
 ## Readout
 
 ```

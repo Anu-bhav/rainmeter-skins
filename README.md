@@ -16,20 +16,47 @@ third-party skins I run alongside it.**
 ## 📸 What it looks like
 
 Three widgets in one visual language — 250px wide, transparent background,
-a graph on top and a two-value readout underneath:
+a graph on top and a two-value readout underneath. Each animation is a real
+capture of the skin running.
 
-| CPU & RAM | GPU | Network |
-|:---:|:---:|:---:|
-| CPU load + system RAM | GPU load + video RAM | Download + upload |
-| cyan / magenta | cyan / magenta | cyan / magenta |
-| `Update=1000` | `Update=1000` | `Update=1000` |
+### CPU & RAM
+
+![CPU and RAM widget](Simplic Suite/Images/cpu_ram.gif)
+
+**CPU load + system RAM**, cyan and magenta over a shared graph.
+
+### GPU
+
+![GPU widget](Simplic Suite/Images/gpu.gif)
+
+**Overall GPU load + video RAM**, read from NVML. The graph and numbers move
+under real GPU load.
+
+### Network
+
+![Network widget](Simplic Suite/Images/network.gif)
+
+**Download + upload throughput**, captured while a download was running.
+
+### Anatomy
 
 ```
 ┌──────────────────────────┐
 │      ▁▂▃▅▃▂▁▂▃  graph   │   ← blue = primary metric, magenta = secondary
-│   CPU 12%   RAM 11.2/64GB│   ← readout, centred as a pair
+│  GPU 4%    VRAM 1.5/12GB │   ← readout, centred as one line
 └──────────────────────────┘
+  0px                      125px                     250px
 ```
+
+All three are 250px wide with a transparent background and share the same
+palette (cyan `#0,202,255`, magenta `#255,43,255`, white `#255,255,255`) from
+`@Resources\Variables.inc`.
+
+| Skin | Readout | Size | Update |
+|---|---|---:|:---:|
+| CPU and RAM | CPU load + system RAM | 250×119 | 1000 ms |
+| Gpu | GPU load + video RAM | 250×119 | 1000 ms |
+| Network | Download + upload | 250×120 | 1000 ms |
 
 ---
 
