@@ -13,7 +13,7 @@ third-party skins I run alongside it.**
 
 ### The whole suite, live
 
-![CPU and RAM, GPU and Network widgets animating](Simplic Suite/Images/all_widgets.gif)
+![CPU and RAM, GPU and Network widgets animating](<Simplic Suite/Images/all_widgets.gif>)
 
 *CPU & RAM · GPU · Network — real captures, 1s update, transparent.*
 
@@ -29,20 +29,20 @@ capture of the skin running.
 
 ### CPU & RAM
 
-![CPU and RAM widget](Simplic Suite/Images/cpu_ram.gif)
+![CPU and RAM widget](<Simplic Suite/Images/cpu_ram.gif>)
 
 **CPU load + system RAM**, cyan and magenta over a shared graph.
 
 ### GPU
 
-![GPU widget](Simplic Suite/Images/gpu.gif)
+![GPU widget](<Simplic Suite/Images/gpu.gif>)
 
 **Overall GPU load + video RAM**, read from NVML. The graph and numbers move
 under real GPU load.
 
 ### Network
 
-![Network widget](Simplic Suite/Images/network.gif)
+![Network widget](<Simplic Suite/Images/network.gif>)
 
 **Download + upload throughput**, captured while a download was running.
 
@@ -85,7 +85,10 @@ Skins/
 ├── Simplic/                ← the original suite these were derived from
 ├── illustro/               ← third-party (poiru)
 ├── SimplyRound/            ← third-party (gronostaj)
-├── Mond/                   ← third-party
+├── Mond/                   ← third-party (Connect-R), clock patched
+│   └── monitor 1/Clock/
+│       ├── Clock.ini       ← modified: even letter spacing
+│       └── letters.lua     ← added: per-letter slot layout
 ├── Socks/                  ← third-party
 ├── Cleartext/              ← third-party
 ├── WeatherX/               ← third-party
@@ -97,6 +100,22 @@ Skins/
 > Anything not in `Simplic Suite/` is someone else's skin, kept here so the
 > whole setup can be restored from one clone. Each of those carries its own
 > license — see the folder it came from.
+
+### The Mond clock fix
+
+The stock `Mond` clock used `CharacterSpacing` for the day name, but its font
+(**Anurati**) has very uneven glyph widths — `I` is 32px while `W` is 324px at
+the clock's size, a **10× spread**. Since `CharacterSpacing` adds the same
+amount to every glyph, the unevenness survives: "SATURDAY" measured gaps of
+**60px to 132px**, which is the "some letters too close, some too far" effect.
+
+`letters.lua` replaces that with a fixed-slot layout: every letter is centred in
+an identical advance slot sized to the widest glyph in the current day name.
+Gaps became **50, 52, 53, 53, 55 px** — even by construction. The one wider gap
+sits after `T`, which is genuinely a narrow glyph; that is correct, not a defect.
+
+The clock keeps its original look — same font, size, shadow and colours. Only
+the horizontal spacing changed.
 
 ---
 
