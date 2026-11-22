@@ -1,6 +1,6 @@
 # Simplic Suite
 
-Three Rainmeter widgets in one visual language: transparent background,
+Four Rainmeter widgets in one visual language: transparent background,
 250px wide, a graph on top and a two-value readout underneath.
 
 | Skin | File | Shows |
@@ -8,8 +8,9 @@ Three Rainmeter widgets in one visual language: transparent background,
 | CPU and RAM | `CPU and RAM/cpu_ram.ini` | CPU load + system RAM used |
 | Network | `Network/Network.ini` | Download + upload throughput |
 | Gpu | `Gpu/GPU.ini` | GPU load + video RAM used |
+| Temp | `Temp/Temp.ini` | GPU temperature + CPU temperature |
 
-All three default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
+All four default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.
 
 ## Preview
@@ -29,6 +30,7 @@ GPU, and a file download drove the network widget.
 ```
 CPU 12%    RAM 11.2/64GB
 GPU 9%     VRAM 1.5/12GB
+GPU 48°C    CPU 44°C
 q 1.2mbps  p 0.4mbps
 ```
 
@@ -48,6 +50,20 @@ X=125
 Text="GPU %1%    VRAM %2.1f/%3.0fGB"
 InlineSetting=Color | #FontColor2#
 InlinePattern=VRAM.*
+```
+
+The Temp skin is the same idea for temperatures:
+
+```ini
+[Readout]
+Meter=String
+MeasureName=mGPUTemp
+MeasureName2=mCPUTemp
+StringAlign=Center
+X=125
+Text="GPU %1°C    CPU %2°C"
+InlineSetting=Color | #FontColor2#
+InlinePattern=CPU.*
 ```
 
 **Inline settings are matched pairs.** `InlineSetting` goes with
