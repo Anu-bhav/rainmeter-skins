@@ -111,6 +111,48 @@ driver) in-process. ~0.08% CPU.
 The plugin must be in `%APPDATA%\Rainmeter\Plugins\` and is 64-bit.
 Source and build script: `_Source\SimplicGpu\`.
 
+## CPU and GPU temperature: two different worlds
+
+**GPU is easy.** NVML (`nvml.dll`, shipped with every NVIDIA driver) exposes
+load, VRAM and temperature in-process, which is what `SimplicGpu.dll` reads.
+No external process, ~0.08% CPU.
+
+**CPU has no such API.** Windows does not publish a CPU temperature through
+any documented interface:
+
+| Attempted | Result |
+|---|---|
+| WMI `MSAcpi_ThermalZoneTemperature` (`root/WMI`) | Access denied |
+| WMI `MSFT_ThermalZoneTemperature` (`Root/Microsoft/Cooling`) | Invalid namespace |
+| `Win32_TemperatureProbe` | Returns empty `CurrentReading` |
+| CoreTemp / SpeedFan plugins | Need their own app running |
+
+What does work without elevation or a helper app is the ACPI thermal zone
+exposed as a performance counter:
+`\Thermal Zone Information(*)\Temperature`. `SimplicCpuTemp.dll` reads it
+through `pdh.dll`, resolved at runtime, so there is no import library and
+nothing extra to ship.
+
+Two gotchas, both found by dumping the raw buffer rather than guessing:
+
+- **The formatted double is already in tenths.** `301.0` means 30.1 °C.
+  Scaling it again by 10 is wrong.
+- **The item stride is not what the header implies.** `bufSize / itemCount`
+  gives 44 bytes per item here, not 24, and the temperature is a 32-bit
+  LONG at offset 16. Reading an 8-byte double at that offset yields a
+  denormal and the value looks like 0.
+
+`Index` selects the thermal zone (default 0, which is `\_TZ.TZ00` on ACPI
+systems). The measure reports degrees Celsius directly and `Reload` sets
+`maxValue` to 100 so graphs scale 0-100 °C.
+
+## Encoding: use UTF-16LE for skins with a `°`
+
+`°` must not be stored as UTF-8 `C2 B0` here. Rainmeter decodes that as
+CP1252 on this setup and renders `Â°`. Every working skin on this machine
+(WeatherX, Mond Weather) stores it as UTF-16LE with a `FF FE` BOM, or as a
+single-byte `B0`. `Temp/Temp.ini` is saved as UTF-16LE.
+
 ## Transparency
 
 Rainmeter skins are transparent by default (`BackgroundMode=1` is the
@@ -125,6 +167,7 @@ All colours come from `@Resources\Variables.inc` (`FontColor1` cyan,
 ## Source folders
 
 - `_Source\SimplicGpu\` — the NVML plugin (C++, MinGW build).
+- `_Source\SimplicCpuTemp\` — the ACPI thermal-zone plugin (C++, MinGW build).
 - `_Source\RainmeterFreeze\` — RainmeterFreeze plus the multi-monitor
   patch described below.
 
