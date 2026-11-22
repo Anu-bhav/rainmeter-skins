@@ -76,10 +76,16 @@ the constant one:
 |---|---|---|
 | CPU and RAM | CPU | RAM |
 | Gpu | GPU | VRAM |
+| Temp | — | both (0–100 °C) |
 | Network | both (naturally bursty) | — |
 
 Verified empirically: with `AutoScale=1` a constant 12 rendered at the top
 whether `MinValue`/`MaxValue` were set or not — AutoScale ignores them.
+
+The Temp skin fixes both graphs at 0–100 °C instead. A temperature has an
+absolute meaning that autoscaling destroys: a CPU at 45 °C and one at 85 °C
+would draw the same height, so the graph stops being able to show whether
+the part is actually hot. Fixed scaling keeps 50 °C at half height.
 
 ## GPU: why NVML, not UsageMonitor or nvidia-smi
 
