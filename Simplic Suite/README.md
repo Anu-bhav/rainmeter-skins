@@ -1,14 +1,23 @@
 # Simplic Suite
 
-Three Rainmeter widgets in one visual language: transparent background,
+**Author:** Anu-Bhav
+**Source:** <https://github.com/Anu-bhav/rainmeter-skins>
+**License:** GPL-2.0 (plugins); the bundled `IntelMSR` Pawn module is LGPL-2.1
+
+Four Rainmeter widgets in one visual language: transparent background,
 250px wide, a graph on top and a two-value readout underneath.
 
 | Skin | File | Shows |
-|---|---|---|
+|---|---|---|---|
 | CPU and RAM | `CPU and RAM/cpu_ram.ini` | CPU load + system RAM used |
 | Network | `Network/Network.ini` | Download + upload throughput |
 | Gpu | `Gpu/GPU.ini` | GPU load + video RAM used |
 | Temp | `Temp/Temp.ini` | GPU temperature + CPU temperature |
+| Clock | `Clock/Clock.ini` | Day name, letter-spaced with a glow |
+
+The Clock is the exception: it is a port of Connect-R's Mond clock and
+keeps its own `Scale`/`BgWidth` variables, its `letters.lua` layout script
+and the Anurati font. Its original author is credited in the file header.
 
 All four default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.

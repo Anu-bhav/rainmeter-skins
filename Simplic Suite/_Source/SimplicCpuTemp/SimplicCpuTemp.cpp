@@ -1,6 +1,11 @@
 /*
  * SimplicCpuTemp - real CPU temperature for Rainmeter
  *
+ * Copyright (C) 2026 Anu-Bhav
+ * https://github.com/Anu-bhav/rainmeter-skins
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Reads Intel's on-die thermal sensor through PawnIO, a signed ring-0 IO
  * driver, using the official IntelMSR Pawn module. No Core Temp, no HWiNFO,
  * no external process and no polling script.

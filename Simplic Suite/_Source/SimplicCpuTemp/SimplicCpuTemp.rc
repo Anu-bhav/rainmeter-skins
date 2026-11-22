@@ -15,11 +15,11 @@ BEGIN
             VALUE "FileDescription",  "SimplicCpuTemp - CPU temperature for Rainmeter"
             VALUE "FileVersion",      "1.0.0.0"
             VALUE "InternalName",     "SimplicCpuTemp"
-            VALUE "LegalCopyright",   "GPL-2.0"
+            VALUE "LegalCopyright",   "Copyright (C) 2026 Anu-Bhav"
             VALUE "OriginalFilename", "SimplicCpuTemp.dll"
             VALUE "ProductName",      "SimplicCpuTemp"
             VALUE "ProductVersion",   "1.0.0.0"
-            VALUE "Comments",         "Intel CPU temperature via PawnIO + IntelMSR (MSR 0x19C). Requires PawnIO and elevation."
+            VALUE "Comments",         "Intel CPU temperature via PawnIO + IntelMSR (MSR 0x19C). Requires PawnIO and elevation. https://github.com/Anu-bhav/rainmeter-skins"
         END
     END
     BLOCK "VarFileInfo"

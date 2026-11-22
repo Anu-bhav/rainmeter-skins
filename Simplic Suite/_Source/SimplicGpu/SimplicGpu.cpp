@@ -1,6 +1,11 @@
 /*
  * SimplicGpu - NVML measure for Rainmeter
  *
+ * Copyright (C) 2026 Anu-Bhav
+ * https://github.com/Anu-bhav/rainmeter-skins
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Reports overall NVIDIA GPU load, VRAM and temperature straight from NVML
  * (nvml.dll ships with every NVIDIA driver). No external process, no temp
  * files, no polling script.

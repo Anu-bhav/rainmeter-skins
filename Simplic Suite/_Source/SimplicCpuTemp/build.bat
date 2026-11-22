@@ -2,6 +2,10 @@
 REM ---------------------------------------------------------------------------
 REM Builds SimplicCpuTemp.dll with MinGW-w64 (no CRT dependency).
 REM
+REM Copyright (C) 2026 Anu-Bhav
+REM https://github.com/Anu-bhav/rainmeter-skins
+REM SPDX-License-Identifier: GPL-2.0
+REM
 REM Requirements:
 REM   - MinGW-w64 (this was built with the toolchain bundled with Strawberry
 REM     Perl: C:\Strawberry\c\bin\g++.exe)

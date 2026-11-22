@@ -15,11 +15,11 @@ BEGIN
             VALUE "FileDescription",  "SimplicGpu - NVML GPU metrics for Rainmeter"
             VALUE "FileVersion",      "1.0.0.0"
             VALUE "InternalName",     "SimplicGpu"
-            VALUE "LegalCopyright",   "GPL-2.0"
+            VALUE "LegalCopyright",   "Copyright (C) 2026 Anu-Bhav"
             VALUE "OriginalFilename", "SimplicGpu.dll"
             VALUE "ProductName",      "SimplicGpu"
             VALUE "ProductVersion",   "1.0.0.0"
-            VALUE "Comments",         "Overall GPU usage, VRAM and temperature via NVML"
+            VALUE "Comments",         "Overall GPU usage, VRAM and temperature via NVML - https://github.com/Anu-bhav/rainmeter-skins"
         END
     END
     BLOCK "VarFileInfo"
