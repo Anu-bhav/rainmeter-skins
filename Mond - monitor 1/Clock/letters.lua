@@ -95,10 +95,16 @@ function Update()
     -- FontSize is points; glyph metrics are pixels. Convert points -> pixels.
     local scale    = (fontSize * POINTS_TO_PIXELS) / REF_SIZE
 
+    -- Background meter width (W=(#BgWidth# * #Scale#)), in skin pixels.
+    local bgW = numVar('BgWidth', 492) * numVar('Scale', 4.4)
+
     -- Ink start position of the current letter. The first glyph's ink begins
     -- exactly at OriginX; each subsequent glyph begins `gap` after the
-    -- previous glyph's ink ends.
+    -- previous glyph's ink ends. At the end we re-centre the whole word inside
+    -- the background meter so the day name sits dead-centre on screen.
     local inkStart = origin
+
+    local positions = {}
 
     for i = 1, #day do
         local ch = day:sub(i, i)
@@ -110,8 +116,7 @@ function Update()
         -- to the right of the pen. Solve for the X that makes ink start at inkStart.
         local x = inkStart - (g.l * scale)
 
-        SKIN:Bang('!SetVariable', 'Day' .. i, ch)
-        SKIN:Bang('!SetVariable', 'DayX' .. i, x)
+        positions[i] = { ch = ch, x = x, inkL = g.l * scale, inkW = inkW }
 
         -- Gap before the NEXT letter. A tiny per-pair tweak lets specific
         -- letters sit closer together where the shapes look better tight.
@@ -123,6 +128,18 @@ function Update()
         end
 
         inkStart = inkStart + inkW + step
+    end
+
+    -- Centre the day name inside the background meter. The ink-based layout
+    -- above lays letters out left-to-right from OriginX; this re-centres the
+    -- whole word so it is symmetric within the meter width (BgWidth).
+    local n = #day
+    local last = positions[n]
+    local totalW = last.x + last.inkL + last.inkW - origin
+    local shift = (bgW - totalW) / 2 - positions[1].x
+    for i = 1, n do
+        SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))
+        SKIN:Bang('!SetVariable', 'DayX' .. i, positions[i].x + shift)
     end
 
     -- Blank unused slots so a short name cannot retain letters from a longer
