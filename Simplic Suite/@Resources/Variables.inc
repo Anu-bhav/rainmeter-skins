@@ -13,8 +13,8 @@ FontColor1=0,202,255,100
 FontColor2=255,43,255,100
 FontColor3=255,255,255,100
 
-FontColor1_Area=0,202,255,100
-FontColor2_Area=255,43,255,100
+FontColor1_Area=0,202,255,51
+FontColor2_Area=255,43,255,51
 
 
 ; --- ISP Speed Limits (Bits per second) ---
