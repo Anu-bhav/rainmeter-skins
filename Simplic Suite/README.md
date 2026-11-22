@@ -1,6 +1,6 @@
 # Simplic Suite
 
-Four Rainmeter widgets in one visual language: transparent background,
+Three Rainmeter widgets in one visual language: transparent background,
 250px wide, a graph on top and a two-value readout underneath.
 
 | Skin | File | Shows |
@@ -8,9 +8,8 @@ Four Rainmeter widgets in one visual language: transparent background,
 | CPU and RAM | `CPU and RAM/cpu_ram.ini` | CPU load + system RAM used |
 | Network | `Network/Network.ini` | Download + upload throughput |
 | Gpu | `Gpu/GPU.ini` | GPU load + video RAM used |
-| Temp | `Temp/Temp.ini` | GPU temperature + CPU temperature |
 
-All four default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
+All three default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.
 
 ## Preview
@@ -30,7 +29,6 @@ GPU, and a file download drove the network widget.
 ```
 CPU 12%    RAM 11.2/64GB
 GPU 9%     VRAM 1.5/12GB
-GPU 48°C    CPU 44°C
 q 1.2mbps  p 0.4mbps
 ```
 
@@ -50,20 +48,6 @@ X=125
 Text="GPU %1%    VRAM %2.1f/%3.0fGB"
 InlineSetting=Color | #FontColor2#
 InlinePattern=VRAM.*
-```
-
-The Temp skin is the same idea for temperatures:
-
-```ini
-[Readout]
-Meter=String
-MeasureName=mGPUTemp
-MeasureName2=mCPUTemp
-StringAlign=Center
-X=125
-Text="GPU %1°C    CPU %2°C"
-InlineSetting=Color | #FontColor2#
-InlinePattern=CPU.*
 ```
 
 **Inline settings are matched pairs.** `InlineSetting` goes with
@@ -111,47 +95,56 @@ driver) in-process. ~0.08% CPU.
 The plugin must be in `%APPDATA%\Rainmeter\Plugins\` and is 64-bit.
 Source and build script: `_Source\SimplicGpu\`.
 
-## CPU and GPU temperature: two different worlds
+## CPU temperature: not available on this hardware
 
-**GPU is easy.** NVML (`nvml.dll`, shipped with every NVIDIA driver) exposes
-load, VRAM and temperature in-process, which is what `SimplicGpu.dll` reads.
-No external process, ~0.08% CPU.
+A combined GPU+CPU temperature widget was built and then removed. This
+section records why, so it does not get attempted a third time.
 
-**CPU has no such API.** Windows does not publish a CPU temperature through
-any documented interface:
+**GPU temperature is easy.** NVML (`nvml.dll`, shipped with every NVIDIA
+driver) exposes temperature in-process, which `SimplicGpu.dll` already
+reads at ~0.08% CPU.
 
-| Attempted | Result |
+**CPU temperature is not readable here, even with administrator rights.**
+Windows exposes no documented CPU temperature API. Every route was tried
+on this machine (MSI PRO Z790-A WIFI, i9-13900KF):
+
+| Source | Result |
 |---|---|
-| WMI `MSAcpi_ThermalZoneTemperature` (`root/WMI`) | Access denied |
-| WMI `MSFT_ThermalZoneTemperature` (`Root/Microsoft/Cooling`) | Invalid namespace |
-| `Win32_TemperatureProbe` | Returns empty `CurrentReading` |
-| CoreTemp / SpeedFan plugins | Need their own app running |
+| `\Thermal Zone Information(*)\Temperature` | 301 / 3010, **never changes** |
+| `MSAcpi_ThermalZoneTemperature` (elevated) | 3010 → 27.85 °C, **never changes** |
+| `EsifDeviceInformation` (Intel DTT) | class absent; `esifsvc` not installed |
+| `MSFT_ThermalZoneTemperature` | invalid namespace |
+| `Win32_PerfFormattedData_ThermalZoneInformation` | invalid class |
+| `Win32_TemperatureProbe` | `32768`, WMI's "unknown" sentinel |
 
-What does work without elevation or a helper app is the ACPI thermal zone
-exposed as a performance counter:
-`\Thermal Zone Information(*)\Temperature`. `SimplicCpuTemp.dll` reads it
-through `pdh.dll`, resolved at runtime, so there is no import library and
-nothing extra to ship.
+The decisive test: sampled elevated under 12–28 % sustained CPU load, the
+raw value stayed pinned at **3010** while `ThermalStamp` advanced normally
+(8278 → 8306). Windows was polling and the ACPI call was succeeding — the
+firmware simply returns a constant.
 
-Two gotchas, both found by dumping the raw buffer rather than guessing:
+3010 is `0x0BC2`, the hard-coded fallback branch that motherboard vendors
+put at the end of `TZ00._TMP`. Two unrelated boards in the wild have had
+their ACPI tables dumped and decompiled showing exactly this, so it is a
+vendor pattern rather than a one-off. Note the same 3010 also reads as
+30.1 °C when treated as tenths-of-°C rather than tenths-of-Kelvin; one
+constant, two plausible-looking numbers.
 
-- **The formatted double is already in tenths.** `301.0` means 30.1 °C.
-  Scaling it again by 10 is wrong.
-- **The item stride is not what the header implies.** `bufSize / itemCount`
-  gives 44 bytes per item here, not 24, and the temperature is a 32-bit
-  LONG at offset 16. Reading an 8-byte double at that offset yields a
-  denormal and the value looks like 0.
+The real per-core sensors live in MSRs reachable only from ring 0, which is
+why Core Temp, HWiNFO and LibreHardwareMonitor all ship a kernel driver.
+Adding one was out of scope, so the widget was removed rather than left
+displaying a fabricated 27.85 °C.
 
-`Index` selects the thermal zone (default 0, which is `\_TZ.TZ00` on ACPI
-systems). The measure reports degrees Celsius directly and `Reload` sets
-`maxValue` to 100 so graphs scale 0-100 °C.
+To have real CPU temperature, install **Core Temp** (free, and the
+`CoreTemp.dll` Rainmeter plugin is already present in
+`C:\Program Files\Rainmeter\Plugins\`) or **LibreHardwareMonitor**, then
+add a skin using `Plugin=CoreTemp` with `CoreTempType=Temperature`.
 
 ## Encoding: use UTF-16LE for skins with a `°`
 
-`°` must not be stored as UTF-8 `C2 B0` here. Rainmeter decodes that as
-CP1252 on this setup and renders `Â°`. Every working skin on this machine
+`°` must not be stored as UTF-8 `C2 B0`. Rainmeter decodes that as CP1252
+on this setup and renders `Â°`. Every working skin on this machine
 (WeatherX, Mond Weather) stores it as UTF-16LE with a `FF FE` BOM, or as a
-single-byte `B0`. `Temp/Temp.ini` is saved as UTF-16LE.
+single-byte `B0`.
 
 ## Transparency
 
@@ -167,7 +160,6 @@ All colours come from `@Resources\Variables.inc` (`FontColor1` cyan,
 ## Source folders
 
 - `_Source\SimplicGpu\` — the NVML plugin (C++, MinGW build).
-- `_Source\SimplicCpuTemp\` — the ACPI thermal-zone plugin (C++, MinGW build).
 - `_Source\RainmeterFreeze\` — RainmeterFreeze plus the multi-monitor
   patch described below.
 
