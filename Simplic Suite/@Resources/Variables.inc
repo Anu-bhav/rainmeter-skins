@@ -9,9 +9,9 @@ FontFace="MesloLGS NF Regular"
 ; FontFace="Segoe UI"  ; (Windows native fallback)
 ; FontFace="Ubuntu"    ; (Excellent rounded alternative)
 
-FontColor1=0,202,255,100
-FontColor2=255,43,255,100
-FontColor3=255,255,255,100
+FontColor1=0,202,255,255
+FontColor2=255,43,255,255
+FontColor3=255,255,255,255
 
 FontColor1_Area=0,202,255,51
 FontColor2_Area=255,43,255,51
