@@ -138,17 +138,18 @@ function Update()
     local pad = 30 * numVar('Scale', 4.4)
     local bgW = totalW + 2 * pad
     SKIN:Bang('!SetVariable', 'DayWordW', bgW)
-    local shift = (bgW - totalW) / 2 - positions[1].x
+    -- bgW = word ink width + 2*pad, so the ink must sit at pad..bgW-pad:
+    -- shift = 0 puts it there exactly (the old formula added an ink-bearing
+    -- offset that made the before/after gaps differ by 2*inkL_1).
+    local shift = 0
     for i = 1, n do
         SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))
         SKIN:Bang('!SetVariable', 'DayX' .. i, positions[i].x + shift)
     end
 
-    -- Vertical: height = cap ink height + 2 * padding, pushed into DayH for
-    -- [MeterBackground]. The panel hugs the text vertically as well as
-    -- horizontally (DayWordW).
+    -- Vertical: height = cap ink height + 2*padV -> equal gaps top/bottom.
     local capH = 251.0
-    local padV = 40.0
+    local padV = 43.0
     local bgH = capH + 2 * padV
     SKIN:Bang('!SetVariable', 'DayH', bgH)
 
