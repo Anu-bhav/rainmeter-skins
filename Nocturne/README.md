@@ -73,8 +73,10 @@ not use the 250 px graph-and-readout layout the other four share.
 
 The background panel is sized to the word: `letters.lua` measures the current
 day name's ink width and pushes it into a `DayWordW` skin variable that the
-background meter's `W=` reads, so the panel adapts per day; the height likewise
-fits the text via `DayH`.
+background meter's `W=` reads, so the panel adapts per day. The height (`DayH`)
+is constant because the font size is. Both dimensions are centred on the glyph
+ink, so the margins above/below and before/after the word are equal; at the
+default scale MONDAY measures 1674×296 (panel 1674×290).
 
 All five default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.

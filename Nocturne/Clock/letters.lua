@@ -137,16 +137,22 @@ function Update()
     local totalW = last.x + last.inkL + last.inkW - origin
     local pad = 30 * numVar('Scale', 4.4)
     local bgW = totalW + 2 * pad
+    -- Move the laid-out word so its first ink starts exactly `pad` from the
+    -- panel's left edge. bgW then leaves the same `pad` on the right. With the
+    -- default OriginX == pad this is 0; the explicit form keeps the margins
+    -- equal even if OriginX is changed independently.
+    local shift = pad - origin
+    -- Vertical: place equal gaps above and below the glyph ink. GDI+ path
+    -- metrics at REF_SIZE give ink top = 41.22 and ink height = 187.78; both
+    -- scale with the rendered em. Rainmeter puts the pen at TextY and the ink
+    -- starts (TextY + topBearing) below the panel top, so the panel height that
+    -- centres the ink is:
+    --     bgH = 2 * (TextY + topBearing * scale) + inkHeight * scale
+    local textY = numVar('TextY', 0)
+    local topBearing = 41.22 * scale
+    local inkH = 187.78 * scale
+    local bgH = 2 * (textY + topBearing) + inkH
     SKIN:Bang('!SetVariable', 'DayWordW', bgW)
-    -- bgW = word ink width + 2*pad, so the ink must sit at pad..bgW-pad:
-    -- shift = 0 puts it there exactly (the old formula added an ink-bearing
-    -- offset that made the before/after gaps differ by 2*inkL_1).
-    local shift = 0
-    -- Vertical: height = cap ink height + 2*padV -> equal gaps top/bottom.
-    -- Set before the position loop so a failure there cannot starve the height.
-    local capH = 251.0
-    local padV = 43.0
-    local bgH = capH + 2 * padV
     SKIN:Bang('!SetVariable', 'DayH', bgH)
     for i = 1, n do
         SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))

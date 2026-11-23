@@ -58,7 +58,7 @@ on top and a two-value readout underneath.
 | [Gpu](Nocturne/Gpu/) | GPU load + video RAM | 250×119 | 1000 ms |
 | [Network](Nocturne/Network/) | Download + upload | 250×123 | 1000 ms |
 | [Temp](Nocturne/Temp/) | GPU temperature + CPU temperature | 250×119 | 1000 ms |
-| [Clock](Nocturne/Clock/) | Day name, letter-spaced, with a glow | 2164×330 | 1000 ms |
+| [Clock](Nocturne/Clock/) | Day name, letter-spaced, with a glow | varies × 296 | 1000 ms |
 
 The Clock is the odd one out: it is a port of Connect-R's Mond clock and keeps
 its own `Scale` / `BgWidth` variables, its `letters.lua` layout script, the
@@ -101,8 +101,10 @@ while `W` is 324 px), so `CharacterSpacing` cannot produce even gaps. A
 
 The background panel is **not** fixed-width: `letters.lua` measures the current
 word's ink width and pushes it into a `DayWordW` skin variable that the
-background meter's `W=` reads, so the panel adapts to the day name; the height
-likewise fits the text.
+background meter's `W=` reads, so the panel adapts to the day name. The height
+(`DayH`) is constant because the font size is. Both dimensions are centred on
+the glyph ink, so the margins above/below and before/after the word are equal.
+At the default scale MONDAY measures 1674×296 (panel 1674×290).
 
 Full documentation for the suite, including the plugin API and the
 CPU-temperature research, is in **[Nocturne/README.md](Nocturne/README.md)**.
