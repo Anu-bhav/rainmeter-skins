@@ -142,16 +142,16 @@ function Update()
     -- shift = 0 puts it there exactly (the old formula added an ink-bearing
     -- offset that made the before/after gaps differ by 2*inkL_1).
     local shift = 0
-    for i = 1, n do
-        SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))
-        SKIN:Bang('!SetVariable', 'DayX' .. i, positions[i].x + shift)
-    end
-
     -- Vertical: height = cap ink height + 2*padV -> equal gaps top/bottom.
+    -- Set before the position loop so a failure there cannot starve the height.
     local capH = 251.0
     local padV = 43.0
     local bgH = capH + 2 * padV
     SKIN:Bang('!SetVariable', 'DayH', bgH)
+    for i = 1, n do
+        SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))
+        SKIN:Bang('!SetVariable', 'DayX' .. i, positions[i].x + shift)
+    end
 
     -- Blank unused slots so a short name cannot retain letters from a longer
     -- previous day (e.g. SUNDAY after WEDNESDAY).
