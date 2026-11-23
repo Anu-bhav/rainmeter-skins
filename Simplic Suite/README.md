@@ -32,9 +32,12 @@ This repo holds the skins actually in use, not a reference collection:
 ```
 Simplic Suite/     this suite
 SASMusicPlayer/    S.A.S. Music Player for Web (vendor skin, 118 ini files)
-BasiliskPower/     BasiliskPower
+BasiliskPower/     BasiliskPower (battery widget for the Razer Basilisk mouse)
 @Vault/            Rainmeter plugin vault, not a skin
 ```
+
+`BasiliskPower/` is published separately at
+<https://github.com/Anu-bhav/razer-basilisk-power>.
 
 Everything else that used to live here — Mond monitors 1-3, Simplic,
 SimplyRound, Socks, illustro, Cleartext, WeatherX, UnPlayer,
@@ -43,13 +46,14 @@ history if you want a reference back.
 
 ## Preview
 
-| CPU and RAM | Gpu | Network |
-|:---:|:---:|:---:|
-| ![](Images/cpu_ram.gif) | ![](Images/gpu.gif) | ![](Images/network.gif) |
+| CPU and RAM | Gpu | Network | Temp |
+|:---:|:---:|:---:|:---:|
+| ![](Images/cpu_ram.gif) | ![](Images/gpu.gif) | ![](Images/network.gif) | ![](Images/temp.gif) |
 
 Real captures with the skins running: CPU load was generated to move the
 graph, a CUDA-free D3D11 load generator exercised the GPU, and a file download
-drove the network widget.
+drove the network widget. The Temp capture shows both temperatures settling
+from idle to a warm idle under light load.
 
 `Images/all_widgets.gif` predates the Temp and Clock skins.
 
