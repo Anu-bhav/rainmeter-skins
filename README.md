@@ -93,7 +93,7 @@ number.
 
 ### Clock
 
-<img src="Nocturne/Images/clock.gif" alt="The Clock widget: the current day name spelled out in large letter-spaced Anurati with a magenta glow." width="420">
+<img src="Nocturne/Images/clock.png" alt="The Clock widget: the current day name spelled out in large letter-spaced Anurati with a magenta glow." width="420">
 
 **Day name, letter-spaced.** Anurati's glyphs vary 10× in width (`I` is 32 px
 while `W` is 324 px), so `CharacterSpacing` cannot produce even gaps. A

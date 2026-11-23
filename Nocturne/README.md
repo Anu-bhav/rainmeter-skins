@@ -64,7 +64,7 @@ Rainmeter; without them it shows `CPU --°C` rather than a fabricated number.
 
 ### Clock
 
-<img src="Images/clock.gif" alt="Clock widget: the day name in large letter-spaced Anurati with a magenta glow." width="420">
+<img src="Images/clock.png" alt="Clock widget: the day name in large letter-spaced Anurati with a magenta glow." width="420">
 
 Day name, letter-spaced, with a glow. This is the odd one out: it is a port of
 Connect-R's Mond clock and keeps its own `Scale` / `BgWidth` variables, its
