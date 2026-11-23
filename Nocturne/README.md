@@ -1,36 +1,85 @@
+<div align="center">
+
 # Nocturne
 
-**Author:** Anu-Bhav
-**Source:** <https://github.com/Anu-bhav/rainmeter-skins>
-**Licence:** GPL-2.0 for the plugins and skins; the bundled `IntelMSR` Pawn
-module is LGPL-2.1, as shipped upstream.
+**Five Rainmeter skins in one visual language: transparent background, 250 px
+wide, a graph on top and a two-value readout underneath.**
 
-Five Rainmeter skins in one visual language: transparent background, 250 px
-wide, a graph on top and a two-value readout underneath.
+![Rainmeter](https://img.shields.io/badge/Rainmeter-4.5-00CAFF?style=flat-square)
+![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=flat-square)
+![Licence](https://img.shields.io/badge/licence-GPL--2.0%20%2B%20LGPL--2.1-lightgrey?style=flat-square)
 
-| Skin | File | Shows |
-|---|---|---|
-| CPU and RAM | `CPU and RAM/cpu_ram.ini` | CPU load + system RAM used |
-| Network | `Network/Network.ini` | Download + upload throughput |
-| Gpu | `Gpu/GPU.ini` | GPU load + video RAM used |
-| Temp | `Temp/Temp.ini` | GPU temperature + CPU temperature |
-| Clock | `Clock/Clock.ini` | Day name, letter-spaced, with a glow |
+<br>
+
+<img src="Images/all_widgets.gif" alt="All five Nocturne widgets animating together: CPU and RAM, GPU, Network, Temp, and the Clock." width="720">
+
+*Real captures, 1 s update, transparent. No mockups.*
+
+</div>
+
+---
+
+## Contents
+
+- [The widgets](#the-widgets)
+- [Repository contents](#repository-contents)
+- [Readout](#readout)
+- [Graphs: when to autoscale](#graphs-when-to-autoscale)
+- [GPU: why NVML](#gpu-why-nvml-not-usageMonitor-or-nvidia-smi)
+- [CPU temperature: PawnIO + Intel MSRs](#cpu-temperature-pawnio--intel-msrs)
+- [Encoding](#encoding-always-use-utf-16le-for-skins-with-symbols)
+- [Colour source](#colour-source)
+- [Source folders](#source-folders)
+- [Deploying on a fresh machine](#deploying-on-a-fresh-machine)
+
+---
+
+## The widgets
+
+### CPU and RAM
+
+<img src="Images/cpu_ram.gif" alt="CPU and RAM widget: cyan CPU graph over magenta RAM graph, readout 'CPU 12%  RAM 11.2/64GB'." width="250">
+
+CPU load + system RAM used.
+
+### Gpu
+
+<img src="Images/gpu.gif" alt="GPU widget: cyan GPU graph over magenta VRAM graph, readout 'GPU 9%  VRAM 1.5/12GB'." width="250">
+
+GPU load + video RAM used, read from NVML.
+
+### Network
+
+<img src="Images/network.gif" alt="Network widget: download and upload graphs, with a down arrow for download and an up arrow for upload." width="256">
+
+Download + upload throughput. The arrows are real Unicode (U+2193 / U+2191)
+drawn in the suite font — no font substitution to go wrong.
+
+### Temp
+
+<img src="Images/temp.gif" alt="Temp widget: GPU and CPU temperature graphs, readout 'GPU 48°C  CPU 44°C'." width="250">
+
+GPU temperature + CPU temperature. The CPU reading needs PawnIO and an elevated
+Rainmeter; without them it shows `CPU --°C` rather than a fabricated number.
+
+### Clock
+
+<img src="Images/clock.gif" alt="Clock widget: the day name in large letter-spaced Anurati with a magenta glow." width="420">
+
+Day name, letter-spaced, with a glow. This is the odd one out: it is a port of
+Connect-R's Mond clock and keeps its own `Scale` / `BgWidth` variables, its
+`letters.lua` layout script, the Anurati font and a `Language` include. It does
+not use the 250 px graph-and-readout layout the other four share.
 
 All five default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.
-
-The Clock is the odd one out. It is a port of Connect-R's Mond clock and keeps
-its own `Scale` / `BgWidth` variables, its `letters.lua` layout script, the
-Anurati font and a `Language` include. Its original author is credited in the
-file header. It does not use the 250 px graph-and-readout layout the other four
-share.
 
 ## Repository contents
 
 This repo holds the skins actually in use, not a reference collection:
 
 ```
-Nocturne/     this suite
+Nocturne/          this suite
 SASMusicPlayer/    S.A.S. Music Player for Web (vendor skin, 118 ini files)
 BasiliskPower/     BasiliskPower (battery widget for the Razer Basilisk mouse)
 @Vault/            Rainmeter plugin vault, not a skin
@@ -44,26 +93,13 @@ SimplyRound, Socks, illustro, Cleartext, WeatherX, UnPlayer,
 WebNowPlayingRedux — was removed on 2026-11-22. It is recoverable from git
 history if you want a reference back.
 
-## Preview
-
-| CPU and RAM | Gpu | Network | Temp |
-|:---:|:---:|:---:|:---:|
-| ![](Images/cpu_ram.gif) | ![](Images/gpu.gif) | ![](Images/network.gif) | ![](Images/temp.gif) |
-
-Real captures with the skins running: CPU load was generated to move the
-graph, a CUDA-free D3D11 load generator exercised the GPU, and a file download
-drove the network widget. The Temp capture shows both temperatures settling
-from idle to a warm idle under light load.
-
-`Images/all_widgets.gif` predates the Temp and Clock skins.
-
 ## Readout
 
 ```
 CPU 12%    RAM 11.2/64GB
 GPU 9%     VRAM 1.5/12GB
 GPU 48°C   CPU 44°C
-q 1.2mbps  p 0.4mbps
+↓ 1.2mbps  ↑ 0.4mbps
 ```
 
 Each readout is **one String meter** centred on `X=125`, the middle of the
@@ -79,7 +115,7 @@ is centred by construction at any digit count.
 Meter=String
 StringAlign=Center
 X=125
-Text="GPU %1%    VRAM %2.1f/%3.0fGB"
+Text="GPU %1%    VRAM [mVramGB:1]/[mVramTotalGB:0]GB"
 InlineSetting=Color | #FontColor2#
 InlinePattern=VRAM.*
 ```
@@ -88,38 +124,54 @@ InlinePattern=VRAM.*
 
 Rainmeter's `%1`, `%2` substitutions accept **plain placeholders only**. A
 `%2.1f` is *not* a format specifier: Rainmeter substitutes `%2` and then
-prints `.1f` as literal text, which is where the stray `f` in the readout
+prints `.1f` as literal text, which is where a stray `f` next to the numbers
 comes from.
 
-Round inside a Calc measure instead and print it with a bare `%2`:
+Verified with a test skin:
+
+| Text | Rendered |
+|---|---|
+| `%1` | `11.234` |
+| `%1.1f` | `11.23.1f`  ← the stray `f` |
+| `[m:0]` | `11` |
+| `[m:1]` | `11.2` |
+| `[m:2]` | `11.23` |
+| `[m:1]/[mBig:0]GB` | `11.2/12GB` |
+
+Use a section-variable format modifier, which also lets each measure have its
+own decimal count — something the meter-wide `NumOfDecimals` option cannot do:
 
 ```ini
-[mVramGB]
-Measure=Calc
-Formula=Trunc(mVramUsed / 1073741824 * 10 + 0.5) / 10
-
-[Readout]
-Meter=String
-MeasureName2=mVramGB
-Text="GPU %1%    VRAM %2/%3GB"
+Text="GPU %1%    VRAM [mVramGB:1]/[mVramTotalGB:0]GB"
 ```
 
-`Trunc(x * 10 + 0.5) / 10` gives round-half-up to one decimal. The result
-stringifies cleanly (`1.5`, `12`, `11.2`) because Rainmeter uses
-shortest-round-trip double formatting, so no trailing `1.500000` appears.
+The `%1` (the GPU percentage) stays a plain placeholder; only the decimal
+measures use the `:N` form.
 
-`NumOfDecimals` is **not** an alternative here: it is a String-meter option
-that applies to *every* bound measure, so it would also turn `GPU 9%` into
-`GPU 9.0%` and `12GB` into `12.0GB`.
+### Inline settings are matched pairs
 
-**Inline settings are matched pairs.** `InlineSetting` goes with
-`InlinePattern`, `InlineSetting2` with `InlinePattern2`. Mismatching the
-numbers silently does nothing (or recolours everything), an easy way to end up
-with a magenta label. Numbering must also have no gaps: `InlineSetting2`
-without an `InlineSetting` makes Rainmeter discard the whole block.
+`InlineSetting` goes with `InlinePattern`, `InlineSetting2` with
+`InlinePattern2`. Mismatching the numbers silently does nothing, or recolours
+everything. Numbering must also have no gaps: an `InlineSetting2` without an
+`InlineSetting` makes Rainmeter discard the whole block.
 
-The Wingdings arrows on the Network skin are part of the same string via an
-inline font change, so they can no longer overlap the numbers.
+### Why the arrows are Unicode
+
+The Network skin used to draw its arrows with Wingdings 3 and
+`InlinePattern2=p ` — p plus a trailing space, to avoid matching the `p` in
+`mbps`. **Rainmeter's INI parser trims trailing whitespace from option values**,
+so the regex that reached the engine was a bare `p`. That matched all three
+`p` characters in `q 1.2mbps    p 0.4mbps`, turning the unit into `Mb<arrow>s`.
+
+Real Unicode arrows (U+2193 down, U+2191 up) drawn in the suite font remove the
+whole problem: no font swap, no pattern that can eat the unit.
+
+The arrows are emphasised with `Size | 19` and `Weight | 900` so they read as
+the primary glyph rather than matching the digits.
+
+Note that `StringStyle=Bold` is a **no-op** here. The suite asks GDI+ for the
+family name `MesloLGS NF Regular` — a *style*, not a family — so there is no
+bold face to link to. Inline `Weight` is what actually emboldens.
 
 ## Graphs: when to autoscale
 
@@ -159,7 +211,7 @@ second cost ~1.5% CPU — more than every other skin combined.
 driver, in-process. ~0.08% CPU.
 
 The plugin must be in `%APPDATA%\Rainmeter\Plugins\` and is 64-bit. Source and
-build script: `_Source\NocturneGpu\`.
+build script: `_Source\SimplicGpu\`.
 
 ## CPU temperature: PawnIO + Intel MSRs
 
@@ -225,15 +277,13 @@ during cooldown. It moves, which is the whole point.
 - The `IntelMSR` blob is **embedded in the DLL** (5,452 bytes) so there is no
   side file to lose or version-skew. Source:
   <https://github.com/namazso/PawnIO.Modules/releases/tag/0.2.12> (LGPL-2.1).
-  Regenerate with `_Source\NocturneCpuTemp\gen_blob.ps1` after a module release.
+  Regenerate with `_Source\SimplicCpuTemp\gen_blob.ps1` after a module release.
   Only the official signed module loads; the driver verifies the signature.
 
 On this machine elevation is arranged with a scheduled task
 (`RainmeterElevated`, trigger *at logon*, run level *Highest*) instead of the
 Startup-folder shortcut, since a Startup shortcut cannot elevate and a "run as
-administrator" shortcut would prompt at every logon. The old Startup
-`Rainmeter.lnk` is renamed `.disabled` so it cannot launch a second,
-unelevated instance.
+administrator" shortcut would prompt at every logon.
 
 ### When it cannot read
 
@@ -245,20 +295,35 @@ The graph treats the negative value as empty.
 This happens if PawnIO is missing, the module is rejected, or Rainmeter is not
 elevated.
 
-## Encoding: use UTF-16LE for skins containing `°`
+CPU temperature needs an **Intel** CPU — the `IntelMSR` module's `main()`
+returns `STATUS_NOT_SUPPORTED` on AMD.
+
+## Encoding: always use UTF-16LE for skins with symbols
 
 `°` must not be stored as UTF-8 `C2 B0`. Rainmeter decodes that as CP1252 on
-this setup and renders `Â°`. Every working skin here stores it as UTF-16LE with
-a `FF FE` BOM, or as single-byte `B0`.
+this setup and renders `Â°`.
 
-`Temp/Temp.ini` is UTF-16LE with a BOM. If you edit it in an editor that
-defaults to UTF-8, the degree sign will break — save it back as UTF-16LE.
+**UTF-8 does not work here, even with a BOM.** Verified by A/B: two files with
+identical text, one UTF-8 with BOM, one UTF-16LE with BOM. The UTF-8 file
+rendered the arrows as garbage; the UTF-16LE file rendered them correctly.
+
+`Temp/Temp.ini` and `Network/Network.ini` are UTF-16LE with a BOM. If you edit
+them in an editor that defaults to UTF-8, the symbols will break — save them
+back as UTF-16LE.
+
+```powershell
+[System.IO.File]::WriteAllText(
+    $path, $text, (New-Object System.Text.UnicodeEncoding($false, $true)))
+```
 
 ## Transparency
 
 Rainmeter skins are transparent by default (`BackgroundMode=1`, and none of
 these skins define a `Background`). The 2 px line under each graph is a
 separator, not a background.
+
+The GIFs in `Images/` are transparent too, so they pick up whatever background
+the README is viewed against.
 
 ## Colour source
 
@@ -277,10 +342,10 @@ deliberately fainter so overlapping graphs do not turn to mud.
 
 ## Source folders
 
-- `_Source\NocturneGpu\` — the NVML plugin (C++, MinGW, no CRT).
+- `_Source\SimplicGpu\` — the NVML plugin (C++, MinGW, no CRT).
   Options: `Metric=Usage` (default) | `VramUsed` | `VramTotal` | `Temp` |
   `Name`, plus `Index`.
-- `_Source\NocturneCpuTemp\` — the CPU temperature plugin (C++, MinGW, no
+- `_Source\SimplicCpuTemp\` — the CPU temperature plugin (C++, MinGW, no
   CRT). Reads Intel MSRs through PawnIO. `IntelMSR_blob.h` is generated from
   the official `IntelMSR.bin` by `gen_blob.ps1`.
 - `_Source\RainmeterFreeze\` — RainmeterFreeze plus the multi-monitor patch.
@@ -304,13 +369,15 @@ Upstream: <https://github.com/ascpixi/RainmeterFreeze> (GPL-2.0)
 
 1. Install Rainmeter.
 2. Clone this repo into `%USERPROFILE%\Documents\Rainmeter\Skins`.
-3. Copy `_Source\NocturneGpu\NocturneGpu.dll` and
-   `_Source\NocturneCpuTemp\NocturneCpuTemp.dll` to
-   `%APPDATA%\Rainmeter\Plugins\`.
+3. Build both plugins from `_Source\` and copy `NocturneGpu.dll` and
+   `NocturneCpuTemp.dll` to `%APPDATA%\Rainmeter\Plugins\`.
 4. For CPU temperature only: install PawnIO, then make Rainmeter run elevated
    (scheduled task at logon with run level Highest).
 5. Refresh Rainmeter. The Temp skin shows `CPU --°C` until both of the above
    are in place; everything else works immediately.
 
-CPU temperature needs an **Intel** CPU — the `IntelMSR` module's `main()`
-returns `STATUS_NOT_SUPPORTED` on AMD.
+---
+
+<div align="center">
+<sub>Colours and layout by Anu-Bhav · <a href="https://github.com/Anu-bhav/rainmeter-skins">source</a></sub>
+</div>

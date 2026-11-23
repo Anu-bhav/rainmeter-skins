@@ -1,307 +1,235 @@
 <div align="center">
 
-# ❄ Rainmeter Skins
+# Rainmeter Skins
 
-**A personal Rainmeter setup — a Simplic suite of my own, plus the
+**A personal Rainmeter setup: Nocturne, a suite of my own, plus the
 third-party skins I run alongside it.**
 
 ![Rainmeter](https://img.shields.io/badge/Rainmeter-4.5-00CAFF?style=flat-square)
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=flat-square)
-![License](https://img.shields.io/badge/skins-see%20each%20folder-lightgrey?style=flat-square)
+![Licence](https://img.shields.io/badge/licence-GPL--2.0%20%2F%20LGPL--2.1-lightgrey?style=flat-square)
 
 <br>
 
-### The whole suite, live
+<img src="Nocturne/Images/all_widgets.gif" alt="Animation of all five Nocturne widgets: CPU and RAM, GPU, Network, Temp and Clock." width="720">
 
-![CPU and RAM, GPU and Network widgets animating](<Simplic Suite/Images/all_widgets.gif>)
-
-*CPU & RAM · GPU · Network — real captures, 1s update, transparent.*
+*All five widgets, running together. Real captures at a 1 s update, transparent
+background — no mockups.*
 
 </div>
 
 ---
 
-## 📸 What it looks like
+## Contents
 
-Three widgets in one visual language — 250px wide, transparent background,
-a graph on top and a two-value readout underneath. Each animation is a real
-capture of the skin running.
+- [What's in the box](#whats-in-the-box)
+- [Nocturne](#nocturne)
+- [The rest of the setup](#the-rest-of-the-setup)
+- [Quick start](#quick-start)
+- [Design notes](#design-notes)
+- [Credits](#credits)
 
-### CPU & RAM
+---
 
-![CPU and RAM widget](<Simplic Suite/Images/cpu_ram.gif>)
+## What's in the box
+
+| Folder | What it is | Licence |
+|---|---|---|
+| [`Nocturne/`](Nocturne/) | My own suite: five widgets, two custom plugins | GPL-2.0 (+ LGPL-2.1 module) |
+| [`BasiliskPower/`](BasiliskPower/) | Battery widget for the Razer Basilisk mouse | see folder |
+| [`SASMusicPlayer/`](SASMusicPlayer/) | S.A.S. Music Player for Web (vendor skin) | see folder |
+| [`@Vault/`](@Vault/) | Rainmeter plugin vault, not a skin | — |
+
+Everything else that used to live here — Mond monitors 1–3, Simplic,
+SimplyRound, Socks, illustro, Cleartext, WeatherX, UnPlayer,
+WebNowPlayingRedux — was removed on 2026-11-22. It is recoverable from git
+history if you want it back.
+
+---
+
+## Nocturne
+
+Five skins in one visual language: transparent background, 250 px wide, a graph
+on top and a two-value readout underneath.
+
+| Widget | Readout | Size | Update |
+|---|---|---:|---:|
+| [CPU and RAM](Nocturne/CPU%20and%20RAM/) | CPU load + system RAM | 250×119 | 1000 ms |
+| [Gpu](Nocturne/Gpu/) | GPU load + video RAM | 250×119 | 1000 ms |
+| [Network](Nocturne/Network/) | Download + upload | 256×132 | 1000 ms |
+| [Temp](Nocturne/Temp/) | GPU temperature + CPU temperature | 250×119 | 1000 ms |
+| [Clock](Nocturne/Clock/) | Day name, letter-spaced, with a glow | 2164×414 | 1000 ms |
+
+The Clock is the odd one out: it is a port of Connect-R's Mond clock and keeps
+its own `Scale` / `BgWidth` variables, its `letters.lua` layout script, the
+Anurati font and a `Language` include.
+
+### CPU and RAM
+
+<img src="Nocturne/Images/cpu_ram.gif" alt="The CPU and RAM widget: a cyan CPU graph over a magenta RAM graph, with the readout 'CPU 12%  RAM 11.2/64GB'." width="250">
 
 **CPU load + system RAM**, cyan and magenta over a shared graph.
 
-### GPU
+### Gpu
 
-![GPU widget](<Simplic Suite/Images/gpu.gif>)
+<img src="Nocturne/Images/gpu.gif" alt="The GPU widget: a cyan GPU graph over a magenta VRAM graph, with the readout 'GPU 9%  VRAM 1.5/12GB'." width="250">
 
-**Overall GPU load + video RAM**, read from NVML. The graph and numbers move
-under real GPU load.
+**Overall GPU load + video RAM**, read from NVML.
 
 ### Network
 
-![Network widget](<Simplic Suite/Images/network.gif>)
+<img src="Nocturne/Images/network.gif" alt="The Network widget: download and upload throughput graphs, with a down arrow for download and an up arrow for upload." width="256">
 
-**Download + upload throughput**, captured while a download was running.
+**Download + upload throughput.** The arrows are real Unicode (U+2193 / U+2191)
+drawn in the suite font, so there is no font substitution to go wrong.
 
-### Anatomy
+### Temp
 
-```
-┌──────────────────────────┐
-│      ▁▂▃▅▃▂▁▂▃  graph   │   ← blue = primary metric, magenta = secondary
-│  GPU 4%    VRAM 1.5/12GB │   ← readout, centred as one line
-└──────────────────────────┘
-  0px                      125px                     250px
-```
+<img src="Nocturne/Images/temp.gif" alt="The Temp widget: GPU and CPU temperature graphs with the readout 'GPU 48°C  CPU 44°C'." width="250">
 
-All three are 250px wide with a transparent background and share the same
-palette (cyan `#0,202,255`, magenta `#255,43,255`, white `#255,255,255`) from
-`@Resources\Variables.inc`.
+**GPU temperature + CPU temperature.** The CPU reading needs PawnIO and an
+elevated Rainmeter; without them it shows `CPU --°C` rather than a made-up
+number.
 
-| Skin | Readout | Size | Update |
-|---|---|---:|:---:|
-| CPU and RAM | CPU load + system RAM | 250×119 | 1000 ms |
-| Gpu | GPU load + video RAM | 250×119 | 1000 ms |
-| Network | Download + upload | 250×120 | 1000 ms |
+### Clock
 
----
+<img src="Nocturne/Images/clock.gif" alt="The Clock widget: the current day name spelled out in large letter-spaced Anurati with a magenta glow." width="420">
 
-## 🗂 Folder map
+**Day name, letter-spaced.** Anurati's glyphs vary 10× in width (`I` is 32 px
+while `W` is 324 px), so `CharacterSpacing` cannot produce even gaps. A
+`letters.lua` pass positions every glyph by its measured ink extent instead.
 
-```
-Skins/
-├── Simplic Suite/          ← the main event (my widgets)
-│   ├── CPU and RAM/
-│   ├── Network/
-│   ├── Gpu/
-│   ├── @Resources/
-│   ├── README.md
-│   └── _Source/            ← C++ / C# source for the custom bits
-│       ├── SimplicGpu/
-│       └── RainmeterFreeze/
-│
-├── Simplic/                ← the original suite these were derived from
-├── illustro/               ← third-party (poiru)
-├── SimplyRound/            ← third-party (gronostaj)
-├── Mond/                   ← third-party (Connect-R), clock patched
-│   └── monitor 1/Clock/
-│       ├── Clock.ini       ← modified: even letter spacing
-│       └── letters.lua     ← added: per-letter slot layout
-├── Socks/                  ← third-party
-├── Cleartext/              ← third-party
-├── WeatherX/               ← third-party
-├── SASMusicPlayer/         ← third-party
-├── UnPlayer/               ← third-party
-└── WebNowPlayingRedux/     ← third-party
-```
-
-> Anything not in `Simplic Suite/` is someone else's skin, kept here so the
-> whole setup can be restored from one clone. Each of those carries its own
-> license — see the folder it came from.
-
-### The Mond clock fix
-
-The stock `Mond` clock used `CharacterSpacing` for the day name, but its font
-(**Anurati**) has very uneven glyph widths — `I` is 32px while `W` is 324px at
-the clock's size, a **10× spread**. Since `CharacterSpacing` adds the same
-amount to every glyph, the unevenness survives: "SATURDAY" measured gaps of
-**60px to 132px**, which is the "some letters too close, some too far" effect.
-
-`letters.lua` replaces that with a fixed-slot layout: every letter is centred in
-an identical advance slot sized to the widest glyph in the current day name.
-Gaps became **50, 52, 53, 53, 55 px** — even by construction. The one wider gap
-sits after `T`, which is genuinely a narrow glyph; that is correct, not a defect.
-
-The clock keeps its original look — same font, size, shadow and colours. Only
-the horizontal spacing changed.
+Full documentation for the suite, including the plugin API and the
+CPU-temperature research, is in **[Nocturne/README.md](Nocturne/README.md)**.
 
 ---
 
-## ⚡ Quick start
+## The rest of the setup
+
+### BasiliskPower
+
+Battery widget for the Razer Basilisk mouse, published separately at
+<https://github.com/Anu-bhav/razer-basilisk-power>.
+
+### SASMusicPlayer
+
+Vendor skin, 118 ini files, unmodified. Runs alongside the suite.
+
+---
+
+## Quick start
 
 1. Install [Rainmeter](https://www.rainmeter.net/) (64-bit).
 2. Clone this repo into your Rainmeter skins folder:
+
    ```powershell
    cd ~/Documents/Rainmeter
    git clone git@github.com:Anu-bhav/rainmeter-skins.git Skins
    ```
-   (or clone somewhere else and point Rainmeter's `SkinPath` at it)
-3. Copy the plugin:
+
+   Or clone somewhere else and point Rainmeter's `SkinPath` at it.
+
+3. Build the plugins. They are not committed as binaries — build them from
+   source:
+
    ```powershell
-   copy "Simplic Suite\_Source\SimplicGpu\SimplicGpu.dll" "$env:APPDATA\Rainmeter\Plugins\"
+   cd "Nocturne\_Source\SimplicGpu"
+   .\build.bat
+   cd "..\SimplicCpuTemp"
+   .\build.bat
    ```
-   The prebuilt DLL is not committed — build it with `_Source\SimplicGpu\build.bat`
-   (needs MinGW-w64).
-4. Set up local secrets:
+
+   Both need MinGW-w64 (the toolchain bundled with Strawberry Perl works).
+
+4. Copy them into Rainmeter's plugin folder:
+
    ```powershell
-   copy "Simplic\@Resources\Secrets.example.inc" "Simplic\@Resources\Secrets.inc"
+   copy "Nocturne\_Source\SimplicGpu\NocturneGpu.dll" "$env:APPDATA\Rainmeter\Plugins\"
+   copy "Nocturne\_Source\SimplicCpuTemp\NocturneCpuTemp.dll" "$env:APPDATA\Rainmeter\Plugins\"
    ```
-   then edit `Secrets.inc` and put your weather API key in it.
-5. Restart Rainmeter, then load the skins you want from **Manage**.
+
+5. For the CPU temperature reading only: install
+   [PawnIO](https://pawnio.eu) and make Rainmeter run elevated. See
+   [Nocturne/README.md](Nocturne/README.md#requirements) for the scheduled-task
+   approach.
+
+6. Restart Rainmeter, then load the skins from **Manage**.
 
 ---
 
-## 🎨 Simplic Suite
+## Design notes
 
-### CPU and RAM — `CPU and RAM/cpu_ram.ini`
+### Why the readout is one String meter
 
-| Value | Meaning |
-|---|---|
-| `CPU 12%` | Aggregate load across all logical cores |
-| `RAM 11.2/64GB` | Used / total system RAM |
+Each readout is a single String meter centred on `X=125`, the middle of the
+250 px line, with the second half recoloured through an inline setting.
 
-### GPU — `Gpu/GPU.ini`
+Centring two separate meters on their own quarter points does **not** centre the
+pair. `GPU 9%` is narrow while `VRAM 1.5/12GB` is wide, so the block drifts
+right — measured at 7–11 px. One centred meter is centred by construction at
+any digit count.
 
-| Value | Meaning |
-|---|---|
-| `GPU 9%` | Overall GPU utilisation, read from NVML |
-| `VRAM 1.5/12GB` | Video memory used / total |
+### Why the graphs don't all autoscale
 
-Reads `nvml.dll` directly through a small custom plugin
-(`SimplicGpu.dll`) rather than spawning `nvidia-smi`, which would cost
-~1.5% CPU instead of ~0.08%.
-
-### Network — `Network/Network.ini`
-
-| Value | Meaning |
-|---|---|
-| `Download 1.2mbps` | Current download throughput |
-| `Upload 0.4mbps` | Current upload throughput |
-
----
-
-## 🧠 Design notes
-
-### Why the graphs don't use AutoScale
-
-Rainmeter's `AutoScale=1` rescales each graph to its **own min/max every
-frame**. That is great for a metric that genuinely moves (GPU load), but it
-is actively misleading for one that sits nearly constant:
+`AutoScale=1` rescales each graph to its own min/max every frame. Great for a
+metric that moves, misleading for one that doesn't.
 
 | Metric | With AutoScale | Fixed 0–100 |
 |---|---|---|
-| VRAM at 1.7 GB of 12 GB (12%) | line pinned at the **top** | line at 12% height ✓ |
-| RAM at 11 of 64 GB (17%) | line near the **top** | line at 17% height ✓ |
+| VRAM 1.7/12 GB (12%) | line pinned at the **top** | 12% height |
+| RAM 11/64 GB (17%) | line near the **top** | 17% height |
 
-So each skin uses **AutoScale for the dynamic metric and fixed scaling for
-the constant one**:
+So each skin autoscales the dynamic metric and fixes the constant one.
+Temperatures are fixed at 0–100 °C, because a temperature has an absolute
+meaning that autoscaling destroys.
 
-| Skin | Autoscale | Fixed 0–100 |
-|---|---|---|
-| CPU and RAM | CPU | RAM |
-| Gpu | GPU | VRAM |
-| Network | both (naturally bursty) | — |
+### Why `%2.1f` does not work
 
-I verified this empirically: with `AutoScale=1` a constant value of 12
-rendered at the top of the graph whether `MinValue`/`MaxValue` were set or
-not — AutoScale ignores them entirely.
+Rainmeter's `%1`, `%2` substitutions accept **plain placeholders only**. A
+`%2.1f` is not a format specifier: Rainmeter substitutes `%2` and then prints
+`.1f` as literal text. That is where a stray `f` next to the numbers comes from.
 
-## Centred readout
-
-Each readout is **one String meter** centred on `X=125` (the middle of the
-250px line), with the second half recoloured via an inline setting:
+Use a section-variable format modifier instead, which also lets each measure
+have its own decimal count:
 
 ```ini
-[Readout]
-Meter=String
-StringAlign=Center
-X=125
-Text="GPU %1%    VRAM %2.1f/%3.0fGB"
-InlineSetting=Color | #FontColor2#
-InlinePattern=VRAM.*
+Text="GPU %1%    VRAM [mVramGB:1]/[mVramTotalGB:0]GB"
 ```
 
-This matters because centring two separate meters on their own quarter points
-does **not** centre the pair. `GPU 9%` is narrow while `VRAM 1.5/12GB` is wide,
-so the block drifts:
+### Why the arrows are Unicode
 
-| Approach | Measured result |
-|---|---|
-| Two meters at X=62 / X=187 | shifted **right by 7–11px** |
-| One centred meter at X=125 | **centred** (mid 125.5 vs skin mid 125) |
+The Network widget used to draw its arrows with Wingdings 3 and
+`InlinePattern2=p ` — but Rainmeter's INI parser trims trailing whitespace from
+option values, so the regex that reached the engine was a bare `p`. That matched
+the `p` inside `mbps` as well, turning the unit into `Mb<arrow>s`.
 
-With one meter, centring is true by construction and stays correct at any
-digit count.
+Real Unicode arrows remove the whole problem: no font swap, no pattern that can
+eat the unit.
 
-**Inline settings are a matched pair.** `InlineSetting` goes with
-`InlinePattern`, and `InlineSetting2` with `InlinePattern2`. Using
-`InlineSetting` with `InlinePattern2` silently does nothing; using an
-unsuffixed `InlineSetting` alongside a suffixed pattern recolours the whole
-string, which is how the GPU label briefly turned magenta.
+### Why skin files with symbols must be UTF-16LE
 
-### Transparency
-
-Rainmeter skins are transparent by default (`BackgroundMode=1`). No skin in
-the suite defines a `Background`, so the desktop shows through. The thin
-line under each graph is a separator, not a fill.
+Rainmeter on this setup decodes UTF-8 (even with a BOM) as CP1252, so `°`
+becomes `Â°` and arrows become mojibake. UTF-16LE with a BOM decodes correctly.
+Every skin here that contains non-ASCII uses it.
 
 ---
 
-## 🔌 Custom components
+## Credits
 
-### `SimplicGpu` — NVML plugin
-
-A 12 KB C++ plugin that reports GPU metrics from `nvml.dll`. No CRT
-dependency, no external processes.
-
-| `Metric=` | Returns |
-|---|---|
-| `Usage` | Overall GPU utilisation, % |
-| `VramUsed` | Video memory in use, bytes |
-| `VramTotal` | Total video memory, bytes |
-| `Temp` | GPU temperature, °C |
-| `Name` | GPU name (string value) |
-
-**Why not UsageMonitor?** Rainmeter's built-in `UsageMonitor` can't produce
-a trustworthy overall GPU number. On a machine with 700+ GPU engine
-instances it sums per-engine/per-process utilisation and reports 34–46%
-while the GPU is actually at 4%. Filtering to 3D engines still gives 38.8%.
-
-**Why not nvidia-smi?** It's accurate but costs ~45 ms per process launch.
-Polling it once a second cost ~1.5% CPU — more than the rest of Rainmeter
-combined. NVML costs ~0.08%.
-
-### `RainmeterFreeze` — with a multi-monitor patch
-
-Upstream [RainmeterFreeze](https://github.com/ascpixi/RainmeterFreeze)
-suspends Rainmeter when the foreground window is maximized. The problem:
-it does that regardless of **which** monitor the window is on. With skins
-only on the primary screen, maximising something on a second monitor would
-freeze them while they're still visible.
-
-The patch adds an `OnlyFreezeOnRainmeterMonitor` option (default on) and a
-matching tray toggle:
-
-```
-Freeze when...  ✓ Foreground window is maximized
-Mode            ✓ Suspend
-                ─────────────
-                ✓ Only on Rainmeter's monitor
-```
-
-With it on, a maximised window on a secondary monitor leaves Rainmeter
-running. Verified on a 3-monitor setup: Discord maximised on DISPLAY2 keeps
-Rainmeter live, Mail maximised on DISPLAY1 freezes it.
-
-Upstream: <https://github.com/ascpixi/RainmeterFreeze> (GPL-2.0)
-
----
-
-## 🤝 Credits
-
-| Skin | Author | License |
+| Project | Author | Licence |
 |---|---|---|
-| Simplic Suite | me, built on Simplic | — |
-| Simplic | HipHopium | — |
-| illustro | poiru | CC BY-NC-SA 3.0 |
-| SimplyRound | Krzysztof "gronostaj" Smialek | CC BY 3.0 |
+| Nocturne | Anu-Bhav | GPL-2.0 |
+| IntelMSR Pawn module | namazso | LGPL-2.1 |
 | RainmeterFreeze | ascpixi | GPL-2.0 |
-| Mond, Socks, Cleartext, WeatherX, SASMusicPlayer, UnPlayer, WebNowPlayingRedux | their respective authors | see each folder |
+| Simplic (original) | HipHopium | see original |
+| Clock (basis) | Connect-R | see original |
+
+The `IntelMSR` module is embedded in `NocturneCpuTemp.dll` and is LGPL-2.1 as
+shipped upstream. Source:
+<https://github.com/namazso/PawnIO.Modules>.
 
 ---
 
 <div align="center">
-<sub>Built with care and a lot of measuring. ❄</sub>
+<sub>Built with care and a lot of measuring.</sub>
 </div>
