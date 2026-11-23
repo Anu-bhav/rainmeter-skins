@@ -9,26 +9,30 @@ FontFace="MesloLGS NF Regular"
 ; FontFace="Segoe UI"  ; (Windows native fallback)
 ; FontFace="Ubuntu"    ; (Excellent rounded alternative)
 
-; --- Text and graph lines -----------------------------------------------
-; Alpha 100 (~39%) is deliberate: it lifts the palette off the wallpaper
-; without shouting. Used for readout text AND the crisp Line overlay.
+; --- Text ---------------------------------------------------------------
+; Alpha 100 (~39%) is deliberate for text: it lifts the palette off the
+; wallpaper without shouting. Used for the readout.
 FontColor1=0,202,255,100
 FontColor2=255,43,255,100
 FontColor3=255,255,255,100
 
 ; --- Neon variants ------------------------------------------------------
-; The same hues at alpha 51 (~20%). A solid fill needs to stay translucent
-; or the graph becomes a flat block of colour, so the "neon" here comes
-; from saturation, not opacity - 0,202,255 and 255,43,255 are already at
-; maximum chroma for their hue.
-FontColor1_Neon=0,202,255,51
-FontColor2_Neon=255,43,255,51
-
-; Hue of the Nocturne CPU/RAM line graph (205 deg) at full saturation and
-; value - the vivid azure that graph draws.
-NeonBlue=0,149,255,51
+; Same hues as BasiliskPower's neon set, at alpha 70 (~27%) instead of
+; BasiliskPower's 255. These are the vivid colours the graph lines draw:
+; bright enough to read as neon against the wallpaper, translucent enough
+; that the fill underneath still shows through.
+;
+;   FontColor1_Neon hue 192 -> #00CAFF  (theme cyan)
+;   FontColor2_Neon hue 300 -> #FF2BFF  (theme magenta)
+;   NeonBlue                -> #0095FF  (the azure the CPU/RAM line uses)
+FontColor1_Neon=0,202,255,70
+FontColor2_Neon=255,43,255,70
+NeonBlue=0,149,255,70
 
 ; --- Area fills ---------------------------------------------------------
+; Deliberately much fainter than the neon lines: two overlapping fills at
+; higher alpha turn to mud, and the area is only there to give the line
+; something to sit on.
 FontColor1_Area=0,202,255,51
 FontColor2_Area=255,43,255,51
 
