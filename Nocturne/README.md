@@ -76,7 +76,13 @@ day name's ink width and pushes it into a `DayWordW` skin variable that the
 background meter's `W=` reads, so the panel adapts per day. The height (`DayH`)
 is constant because the font size is. Both dimensions are centred on the glyph
 ink, so the margins above/below and before/after the word are equal; at the
-default scale MONDAY measures 1674×296 (panel 1674×290).
+default scale MONDAY measures 1674×296 (panel 1674×290); TUESDAY is wider at
+1732×296.
+
+**Hover glow.** At rest the clock is subtle — background panel at 4% opacity,
+text at 39%. On hover the skin jumps to full opacity (`!SetTransparency 255`),
+revealing the solid black panel and a vivid magenta shadow glow (`#ShadowColor`,
+`ShadowBlur = 2×Scale`). Move the mouse away and it fades back (`!SetTransparency 100`).
 
 All five default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.

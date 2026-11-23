@@ -104,7 +104,13 @@ word's ink width and pushes it into a `DayWordW` skin variable that the
 background meter's `W=` reads, so the panel adapts to the day name. The height
 (`DayH`) is constant because the font size is. Both dimensions are centred on
 the glyph ink, so the margins above/below and before/after the word are equal.
-At the default scale MONDAY measures 1674×296 (panel 1674×290).
+At the default scale MONDAY measures 1674×296 (panel 1674×290); TUESDAY is
+wider at 1732×296.
+
+**Hover glow.** At rest the clock is subtle — background panel at 4% opacity,
+text at 39%. On hover the skin jumps to full opacity (`!SetTransparency 255`),
+revealing the solid black panel and a vivid magenta shadow glow (`#ShadowColor`,
+`ShadowBlur = 2×Scale`). Move the mouse away and it fades back (`!SetTransparency 100`).
 
 Full documentation for the suite, including the plugin API and the
 CPU-temperature research, is in **[Nocturne/README.md](Nocturne/README.md)**.
