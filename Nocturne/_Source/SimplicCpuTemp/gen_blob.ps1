@@ -36,8 +36,8 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine(" * License: LGPL-2.1-or-later")
 [void]$sb.AppendLine(" */")
 [void]$sb.AppendLine("")
-[void]$sb.AppendLine("#ifndef SIMPLIC_INTELMSR_BLOB_H")
-[void]$sb.AppendLine("#define SIMPLIC_INTELMSR_BLOB_H")
+[void]$sb.AppendLine("#ifndef NOCTURNE_INTELMSR_BLOB_H")
+[void]$sb.AppendLine("#define NOCTURNE_INTELMSR_BLOB_H")
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("static const unsigned char gIntelMsrBlob[] = {")
 
@@ -54,7 +54,7 @@ for ($i = 0; $i -lt $bytes.Length; $i += 12) {
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine(("static const unsigned int gIntelMsrBlobSize = {0};" -f $bytes.Length))
 [void]$sb.AppendLine("")
-[void]$sb.AppendLine("#endif /* SIMPLIC_INTELMSR_BLOB_H */")
+[void]$sb.AppendLine("#endif /* NOCTURNE_INTELMSR_BLOB_H */")
 [void]$sb.AppendLine("")
 
 [System.IO.File]::WriteAllText($out, $sb.ToString(), (New-Object System.Text.UTF8Encoding($false)))

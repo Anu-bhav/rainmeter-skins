@@ -11,13 +11,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName",      "Simplic"
-            VALUE "FileDescription",  "SimplicGpu - NVML GPU metrics for Rainmeter"
+            VALUE "CompanyName",      "Nocturne"
+            VALUE "FileDescription",  "NocturneGpu - NVML GPU metrics for Rainmeter"
             VALUE "FileVersion",      "1.0.0.0"
-            VALUE "InternalName",     "SimplicGpu"
+            VALUE "InternalName",     "NocturneGpu"
             VALUE "LegalCopyright",   "Copyright (C) 2026 Anu-Bhav"
-            VALUE "OriginalFilename", "SimplicGpu.dll"
-            VALUE "ProductName",      "SimplicGpu"
+            VALUE "OriginalFilename", "NocturneGpu.dll"
+            VALUE "ProductName",      "NocturneGpu"
             VALUE "ProductVersion",   "1.0.0.0"
             VALUE "Comments",         "Overall GPU usage, VRAM and temperature via NVML - https://github.com/Anu-bhav/rainmeter-skins"
         END

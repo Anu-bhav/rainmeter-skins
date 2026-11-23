@@ -1,4 +1,4 @@
--- Simplic - even letter spacing for the day name
+-- Nocturne - even letter spacing for the day name
 --
 -- WHY THIS EXISTS
 -- Anurati's glyphs vary enormously in width (I=37px, W=329px at 229px), so

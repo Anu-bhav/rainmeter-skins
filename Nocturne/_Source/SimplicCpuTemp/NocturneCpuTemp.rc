@@ -11,13 +11,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName",      "Simplic"
-            VALUE "FileDescription",  "SimplicCpuTemp - CPU temperature for Rainmeter"
+            VALUE "CompanyName",      "Nocturne"
+            VALUE "FileDescription",  "NocturneCpuTemp - CPU temperature for Rainmeter"
             VALUE "FileVersion",      "1.0.0.0"
-            VALUE "InternalName",     "SimplicCpuTemp"
+            VALUE "InternalName",     "NocturneCpuTemp"
             VALUE "LegalCopyright",   "Copyright (C) 2026 Anu-Bhav"
-            VALUE "OriginalFilename", "SimplicCpuTemp.dll"
-            VALUE "ProductName",      "SimplicCpuTemp"
+            VALUE "OriginalFilename", "NocturneCpuTemp.dll"
+            VALUE "ProductName",      "NocturneCpuTemp"
             VALUE "ProductVersion",   "1.0.0.0"
             VALUE "Comments",         "Intel CPU temperature via PawnIO + IntelMSR (MSR 0x19C). Requires PawnIO and elevation. https://github.com/Anu-bhav/rainmeter-skins"
         END

@@ -1,5 +1,5 @@
 /*
- * SimplicGpu - NVML measure for Rainmeter
+ * NocturneGpu - NVML measure for Rainmeter
  *
  * Copyright (C) 2026 Anu-Bhav
  * https://github.com/Anu-bhav/rainmeter-skins

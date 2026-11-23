@@ -19,16 +19,16 @@ FontColor2_Area=255,43,255,51
 ; --- Neon variants -------------------------------------------------------
 ; The theme colours above carry alpha 100 (39% opacity), which is right for
 ; text but reads dull for a solid fill. These are the same hues at full
-; saturation and value:
+; saturation, at alpha 51 like the other neon variants:
 ;
-;   FontColor1 hue 192 -> #00CAFF  (theme cyan, full opacity)
-;   FontColor2 hue 300 -> #FF2BFF  (theme magenta, full opacity)
+;   FontColor1 hue 192 -> #00CAFF  (theme cyan)
+;   FontColor2 hue 300 -> #FF2BFF  (theme magenta)
 ;   NeonBlue is the hue of the Simplic CPU/RAM line graph (205 deg) at full
 ;   saturation and value -- the vivid azure that graph draws.
 ;
 ; Used for the battery fill so it reads as vividly as the CPU/RAM widgets.
-FontColor1_Neon=0,202,255,255
-FontColor2_Neon=255,43,255,255
+FontColor1_Neon=0,202,255,51
+FontColor2_Neon=255,43,255,51
 NeonBlue=0,149,255,255
 
 ; Low-battery warning: a vivid coral red that still reads as part of the

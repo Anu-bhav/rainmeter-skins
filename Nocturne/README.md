@@ -1,4 +1,4 @@
-# Simplic Suite
+# Nocturne
 
 **Author:** Anu-Bhav
 **Source:** <https://github.com/Anu-bhav/rainmeter-skins>
@@ -30,7 +30,7 @@ share.
 This repo holds the skins actually in use, not a reference collection:
 
 ```
-Simplic Suite/     this suite
+Nocturne/     this suite
 SASMusicPlayer/    S.A.S. Music Player for Web (vendor skin, 118 ini files)
 BasiliskPower/     BasiliskPower (battery widget for the Razer Basilisk mouse)
 @Vault/            Rainmeter plugin vault, not a skin
@@ -84,6 +84,34 @@ InlineSetting=Color | #FontColor2#
 InlinePattern=VRAM.*
 ```
 
+### `%N` takes no printf specifiers
+
+Rainmeter's `%1`, `%2` substitutions accept **plain placeholders only**. A
+`%2.1f` is *not* a format specifier: Rainmeter substitutes `%2` and then
+prints `.1f` as literal text, which is where the stray `f` in the readout
+comes from.
+
+Round inside a Calc measure instead and print it with a bare `%2`:
+
+```ini
+[mVramGB]
+Measure=Calc
+Formula=Trunc(mVramUsed / 1073741824 * 10 + 0.5) / 10
+
+[Readout]
+Meter=String
+MeasureName2=mVramGB
+Text="GPU %1%    VRAM %2/%3GB"
+```
+
+`Trunc(x * 10 + 0.5) / 10` gives round-half-up to one decimal. The result
+stringifies cleanly (`1.5`, `12`, `11.2`) because Rainmeter uses
+shortest-round-trip double formatting, so no trailing `1.500000` appears.
+
+`NumOfDecimals` is **not** an alternative here: it is a String-meter option
+that applies to *every* bound measure, so it would also turn `GPU 9%` into
+`GPU 9.0%` and `12GB` into `12.0GB`.
+
 **Inline settings are matched pairs.** `InlineSetting` goes with
 `InlinePattern`, `InlineSetting2` with `InlinePattern2`. Mismatching the
 numbers silently does nothing (or recolours everything), an easy way to end up
@@ -127,11 +155,11 @@ scaling keeps 50 °C at half height. Both measures carry `MinValue=0` /
 **Not `nvidia-smi`.** Accurate, but ~45 ms per process launch. Polling once a
 second cost ~1.5% CPU — more than every other skin combined.
 
-**NVML via `SimplicGpu.dll`.** Reads `nvml.dll`, which ships with every NVIDIA
+**NVML via `NocturneGpu.dll`.** Reads `nvml.dll`, which ships with every NVIDIA
 driver, in-process. ~0.08% CPU.
 
 The plugin must be in `%APPDATA%\Rainmeter\Plugins\` and is 64-bit. Source and
-build script: `_Source\SimplicGpu\`.
+build script: `_Source\NocturneGpu\`.
 
 ## CPU temperature: PawnIO + Intel MSRs
 
@@ -169,7 +197,7 @@ Real per-core temperature lives in machine-specific registers reachable only
 from ring 0. [PawnIO](https://pawnio.eu) is a signed ring-0 IO driver that
 loads small signed **Pawn modules**. The official
 [IntelMSR](https://github.com/namazso/PawnIO.Modules) module permits reading an
-allowlist of MSRs, and `SimplicCpuTemp.dll` uses it:
+allowlist of MSRs, and `NocturneCpuTemp.dll` uses it:
 
 | MSR | Purpose |
 |---|---|
@@ -197,7 +225,7 @@ during cooldown. It moves, which is the whole point.
 - The `IntelMSR` blob is **embedded in the DLL** (5,452 bytes) so there is no
   side file to lose or version-skew. Source:
   <https://github.com/namazso/PawnIO.Modules/releases/tag/0.2.12> (LGPL-2.1).
-  Regenerate with `_Source\SimplicCpuTemp\gen_blob.ps1` after a module release.
+  Regenerate with `_Source\NocturneCpuTemp\gen_blob.ps1` after a module release.
   Only the official signed module loads; the driver verifies the signature.
 
 On this machine elevation is arranged with a scheduled task
@@ -249,10 +277,10 @@ deliberately fainter so overlapping graphs do not turn to mud.
 
 ## Source folders
 
-- `_Source\SimplicGpu\` — the NVML plugin (C++, MinGW, no CRT).
+- `_Source\NocturneGpu\` — the NVML plugin (C++, MinGW, no CRT).
   Options: `Metric=Usage` (default) | `VramUsed` | `VramTotal` | `Temp` |
   `Name`, plus `Index`.
-- `_Source\SimplicCpuTemp\` — the CPU temperature plugin (C++, MinGW, no
+- `_Source\NocturneCpuTemp\` — the CPU temperature plugin (C++, MinGW, no
   CRT). Reads Intel MSRs through PawnIO. `IntelMSR_blob.h` is generated from
   the official `IntelMSR.bin` by `gen_blob.ps1`.
 - `_Source\RainmeterFreeze\` — RainmeterFreeze plus the multi-monitor patch.
@@ -276,8 +304,8 @@ Upstream: <https://github.com/ascpixi/RainmeterFreeze> (GPL-2.0)
 
 1. Install Rainmeter.
 2. Clone this repo into `%USERPROFILE%\Documents\Rainmeter\Skins`.
-3. Copy `_Source\SimplicGpu\SimplicGpu.dll` and
-   `_Source\SimplicCpuTemp\SimplicCpuTemp.dll` to
+3. Copy `_Source\NocturneGpu\NocturneGpu.dll` and
+   `_Source\NocturneCpuTemp\NocturneCpuTemp.dll` to
    `%APPDATA%\Rainmeter\Plugins\`.
 4. For CPU temperature only: install PawnIO, then make Rainmeter run elevated
    (scheduled task at logon with run level Highest).

@@ -1,5 +1,5 @@
 /*
- * SimplicCpuTemp - real CPU temperature for Rainmeter
+ * NocturneCpuTemp - real CPU temperature for Rainmeter
  *
  * Copyright (C) 2026 Anu-Bhav
  * https://github.com/Anu-bhav/rainmeter-skins
