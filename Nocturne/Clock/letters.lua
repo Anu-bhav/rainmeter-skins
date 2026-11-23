@@ -95,9 +95,6 @@ function Update()
     -- FontSize is points; glyph metrics are pixels. Convert points -> pixels.
     local scale    = (fontSize * POINTS_TO_PIXELS) / REF_SIZE
 
-    -- Background meter width (W=(#BgWidth# * #Scale#)), in skin pixels.
-    local bgW = numVar('BgWidth', 492) * numVar('Scale', 4.4)
-
     -- Ink start position of the current letter. The first glyph's ink begins
     -- exactly at OriginX; each subsequent glyph begins `gap` after the
     -- previous glyph's ink ends. At the end we re-centre the whole word inside
@@ -132,10 +129,15 @@ function Update()
 
     -- Centre the day name inside the background meter. The ink-based layout
     -- above lays letters out left-to-right from OriginX; this re-centres the
-    -- whole word so it is symmetric within the meter width (BgWidth).
+    -- whole word so it is symmetric within the background. The background
+    -- itself is sized to the word (DayWordW = word ink width + 2*pad) and pushed
+    -- into the skin variable that [MeterBackground] reads via W=#DayWordW#.
     local n = #day
     local last = positions[n]
     local totalW = last.x + last.inkL + last.inkW - origin
+    local pad = 30 * numVar('Scale', 4.4)
+    local bgW = totalW + 2 * pad
+    SKIN:Bang('!SetVariable', 'DayWordW', bgW)
     local shift = (bgW - totalW) / 2 - positions[1].x
     for i = 1, n do
         SKIN:Bang('!SetVariable', 'Day' .. i, day:sub(i, i))

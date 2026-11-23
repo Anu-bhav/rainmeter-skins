@@ -50,9 +50,9 @@ GPU load + video RAM used, read from NVML.
 
 ### Network
 
-<img src="Images/network.gif" alt="Network widget: download and upload graphs, with a down arrow for download and an up arrow for upload." width="256">
+<img src="Images/network.gif" alt="Network widget: download and upload graphs, with a down arrow for download and an up arrow for upload." width="250">
 
-Download + upload throughput. The arrows are real Unicode (U+2193 / U+2191)
+Download + upload throughput. The arrows are real Unicode (U+21D3 / U+21D1)
 drawn in the suite font — no font substitution to go wrong.
 
 ### Temp
@@ -70,6 +70,10 @@ Day name, letter-spaced, with a glow. This is the odd one out: it is a port of
 Connect-R's Mond clock and keeps its own `Scale` / `BgWidth` variables, its
 `letters.lua` layout script, the Anurati font and a `Language` include. It does
 not use the 250 px graph-and-readout layout the other four share.
+
+The background panel is sized to the word: `letters.lua` measures the current
+day name's ink width and pushes it into a `DayWordW` skin variable that the
+background meter's `W=` reads, so the panel adapts per day.
 
 All five default to **Update=1000**. Change `Update=` in the `[Rainmeter]`
 section of each `.ini` to adjust.
@@ -109,6 +113,9 @@ That is deliberate. Centring two separate meters on their own ¼ and ¾ points
 does **not** centre the pair: `GPU 9%` is narrow while `VRAM 1.5/12GB` is
 wide, so the block drifts right of centre (measured 7-11 px). One centred meter
 is centred by construction at any digit count.
+
+The Network readout is the exception: it is an arrow plus a value, drawn as
+separate meters (see [Why the arrows are Unicode](#why-the-arrows-are-unicode)).
 
 ```ini
 [Readout]
@@ -163,15 +170,20 @@ The Network skin used to draw its arrows with Wingdings 3 and
 so the regex that reached the engine was a bare `p`. That matched all three
 `p` characters in `q 1.2mbps    p 0.4mbps`, turning the unit into `Mb<arrow>s`.
 
-Real Unicode arrows (U+2193 down, U+2191 up) drawn in the suite font remove the
-whole problem: no font swap, no pattern that can eat the unit.
+The arrows are real Unicode (U+21D3 down, U+21D1 up) drawn in the suite font;
+no font swap, no pattern that can eat the unit.
 
-The arrows are emphasised with `Size | 19` and `Weight | 900` so they read as
-the primary glyph rather than matching the digits.
+The arrows are emphasised with a **separate String meter** per arrow, set to
+`FontSize=19` and `FontWeight=900` — the largest and heaviest styling the
+suite font offers (`MesloLGS NF` ships Regular + Bold only, and Rainmeter
+4.5.28 silently ignores inline `Size` and `Weight`, so inline emphasis can no
+longer carry the weight). They read as the primary glyph rather than matching
+the digits.
 
 Note that `StringStyle=Bold` is a **no-op** here. The suite asks GDI+ for the
 family name `MesloLGS NF Regular` — a *style*, not a family — so there is no
-bold face to link to. Inline `Weight` is what actually emboldens.
+bold face to link to; the emphasis comes from the heavier glyph at a larger
+size.
 
 ## Graphs: when to autoscale
 

@@ -56,9 +56,9 @@ on top and a two-value readout underneath.
 |---|---|---:|---:|
 | [CPU and RAM](Nocturne/CPU%20and%20RAM/) | CPU load + system RAM | 250×119 | 1000 ms |
 | [Gpu](Nocturne/Gpu/) | GPU load + video RAM | 250×119 | 1000 ms |
-| [Network](Nocturne/Network/) | Download + upload | 256×132 | 1000 ms |
+| [Network](Nocturne/Network/) | Download + upload | 250×123 | 1000 ms |
 | [Temp](Nocturne/Temp/) | GPU temperature + CPU temperature | 250×119 | 1000 ms |
-| [Clock](Nocturne/Clock/) | Day name, letter-spaced, with a glow | 2164×414 | 1000 ms |
+| [Clock](Nocturne/Clock/) | Day name, letter-spaced, with a glow | 2164×330 | 1000 ms |
 
 The Clock is the odd one out: it is a port of Connect-R's Mond clock and keeps
 its own `Scale` / `BgWidth` variables, its `letters.lua` layout script, the
@@ -80,7 +80,7 @@ Anurati font and a `Language` include.
 
 <img src="Nocturne/Images/network.gif" alt="The Network widget: download and upload throughput graphs, with a down arrow for download and an up arrow for upload." width="256">
 
-**Download + upload throughput.** The arrows are real Unicode (U+2193 / U+2191)
+**Download + upload throughput.** The arrows are real Unicode (U+21D3 / U+21D1)
 drawn in the suite font, so there is no font substitution to go wrong.
 
 ### Temp
@@ -98,6 +98,10 @@ number.
 **Day name, letter-spaced.** Anurati's glyphs vary 10× in width (`I` is 32 px
 while `W` is 324 px), so `CharacterSpacing` cannot produce even gaps. A
 `letters.lua` pass positions every glyph by its measured ink extent instead.
+
+The background panel is **not** fixed-width: `letters.lua` measures the current
+word's ink width and pushes it into a `DayWordW` skin variable that the
+background meter's `W=` reads, so the panel adapts to the day name.
 
 Full documentation for the suite, including the plugin API and the
 CPU-temperature research, is in **[Nocturne/README.md](Nocturne/README.md)**.
@@ -168,6 +172,10 @@ Centring two separate meters on their own quarter points does **not** centre the
 pair. `GPU 9%` is narrow while `VRAM 1.5/12GB` is wide, so the block drifts
 right — measured at 7–11 px. One centred meter is centred by construction at
 any digit count.
+
+The Network readout is the exception: it is an arrow plus a value, drawn as
+separate meters (see
+[Why the arrows are Unicode](#why-the-arrows-are-unicode)).
 
 ### Why the graphs don't all autoscale
 
