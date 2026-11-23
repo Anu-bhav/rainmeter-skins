@@ -11,9 +11,9 @@ third-party skins I run alongside it.**
 
 <br>
 
-<img src="Nocturne/Images/all_widgets.gif" alt="Animation of all five Nocturne widgets: CPU and RAM, GPU, Network, Temp and Clock." width="720">
+<img src="Nocturne/Images/all_widgets.gif" alt="Animation of the four live Nocturne widgets: CPU and RAM, GPU, Network and Temp." width="720">
 
-*All five widgets, running together. Real captures at a 1 s update, transparent
+*The four live widgets, running together. Real captures at a 1 s update, transparent
 background — no mockups.*
 
 </div>

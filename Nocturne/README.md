@@ -11,9 +11,9 @@ wide, a graph on top and a two-value readout underneath.**
 
 <br>
 
-<img src="Images/all_widgets.gif" alt="All five Nocturne widgets animating together: CPU and RAM, GPU, Network, Temp, and the Clock." width="720">
+<img src="Images/all_widgets.gif" alt="The four live Nocturne widgets animating together: CPU and RAM, GPU, Network and Temp." width="720">
 
-*Real captures, 1 s update, transparent. No mockups.*
+*The four live widgets, captured at a 1 s update with a transparent background. The Clock is shown separately below.*
 
 </div>
 
