@@ -144,6 +144,14 @@ function Update()
         SKIN:Bang('!SetVariable', 'DayX' .. i, positions[i].x + shift)
     end
 
+    -- Vertical: height = cap ink height + 2 * padding, pushed into DayH for
+    -- [MeterBackground]. The panel hugs the text vertically as well as
+    -- horizontally (DayWordW).
+    local capH = 251.0
+    local padV = 40.0
+    local bgH = capH + 2 * padV
+    SKIN:Bang('!SetVariable', 'DayH', bgH)
+
     -- Blank unused slots so a short name cannot retain letters from a longer
     -- previous day (e.g. SUNDAY after WEDNESDAY).
     for i = #day + 1, 9 do

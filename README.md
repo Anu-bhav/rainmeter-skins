@@ -101,7 +101,8 @@ while `W` is 324 px), so `CharacterSpacing` cannot produce even gaps. A
 
 The background panel is **not** fixed-width: `letters.lua` measures the current
 word's ink width and pushes it into a `DayWordW` skin variable that the
-background meter's `W=` reads, so the panel adapts to the day name.
+background meter's `W=` reads, so the panel adapts to the day name; the height
+likewise fits the text.
 
 Full documentation for the suite, including the plugin API and the
 CPU-temperature research, is in **[Nocturne/README.md](Nocturne/README.md)**.
