@@ -128,6 +128,53 @@ Battery widget for the Razer Basilisk mouse, published separately at
 
 Vendor skin, 118 ini files, unmodified. Runs alongside the suite.
 
+### RainmeterFreeze
+
+**RainmeterFreeze** is a companion utility that suspends Rainmeter when a
+full-screen (or maximized) window covers the desktop, saving CPU/GPU while
+you're gaming or watching video. It lives in `Nocturne/_Source/RainmeterFreeze/`
+and is built from source.
+
+**Key features (patched in this fork):**
+
+| Feature | Description |
+|---|---|
+| **Nocturne-themed tray icon** | 4-pointed snowflake in cyan/magenta; active = pulse ring, frozen = pause bars |
+| **Multi-monitor aware** | `OnlyFreezeOnRainmeterMonitor` (default true) — a maximized window on a secondary screen won't freeze skins on your primary |
+| **Smart process detection** | Prefers the Rainmeter instance with visible windows |
+| **Config hot-reload** | Edit `config.json` externally (e.g. from another tool) — changes apply instantly |
+| **Full-screen tolerance** | 2 px tolerance for borderless windowed games |
+| **Suspend/resume retry** | 3×50 ms retries handle thread creation/destruction races |
+| **Debug logging** | Rotating 1 MB log at `%APPDATA%\RainmeterFreeze\rainmeterfreeze.log` |
+| **Debug log toggle** | Enable/disable from tray menu |
+
+**Configuration** (`%APPDATA%\RainmeterFreeze\config.json`):
+```json
+{
+  "FreezeAlgorithm": "Maximized",        // Maximized | NotOnDesktop | FullScreen
+  "FreezeMode": "Suspend",               // Suspend | LowPriority
+  "OnlyFreezeOnRainmeterMonitor": true,  // multi-monitor awareness
+  "EnableDebugLog": false                // toggle via tray menu
+}
+```
+
+**Build & Install:**
+```powershell
+# 1. Build (needs .NET 9 SDK)
+cd "Nocturne\_Source\RainmeterFreeze"
+dotnet build -c Release
+
+# 2. Install to %LOCALAPPDATA%\RainmeterFreeze
+copy "bin\Release\net9.0-windows\RainmeterFreeze.exe" "$env:LOCALAPPDATA\RainmeterFreeze\"
+copy "bin\Release\net9.0-windows\RainmeterFreeze.dll" "$env:LOCALAPPDATA\RainmeterFreeze\"
+copy "bin\Release\net9.0-windows\H.NotifyIcon.dll" "$env:LOCALAPPDATA\RainmeterFreeze\"
+copy "bin\Release\net9.0-windows\System.Drawing.Common.dll" "$env:LOCALAPPDATA\RainmeterFreeze\"
+
+# 3. Auto-start: create a shortcut in shell:startup pointing to the exe
+```
+
+The Startup shortcut (`RainmeterFreeze.lnk`) is already in this repo's `Nocturne/` folder — copy it to `shell:startup` or run `.\install_freeze.ps1` (see Nocturne folder).
+
 ---
 
 ## Quick start
@@ -244,6 +291,11 @@ Every skin here that contains non-ASCII uses it.
 The `IntelMSR` module is embedded in `NocturneCpuTemp.dll` and is LGPL-2.1 as
 shipped upstream. Source:
 <https://github.com/namazso/PawnIO.Modules>.
+
+**RainmeterFreeze (Nocturne fork)** — includes the multi-monitor patch,
+Nocturne-themed tray icon, config hot-reload, full-screen tolerance,
+suspend/retry logic, debug logging, and smarter process detection.
+Source: `Nocturne/_Source/RainmeterFreeze/`
 
 ---
 

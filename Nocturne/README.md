@@ -386,6 +386,110 @@ toggle, so a window on a secondary monitor never freezes Rainmeter.
 
 Upstream: <https://github.com/ascpixi/RainmeterFreeze> (GPL-2.0)
 
+---
+
+## RainmeterFreeze — Nocturne fork
+
+This repo includes a heavily patched fork of **RainmeterFreeze** in
+`_Source\RainmeterFreeze/`. It suspends Rainmeter when a full-screen/maximized
+window covers the desktop, saving resources while gaming or watching video.
+
+### Patches & improvements in this fork
+
+| Category | Changes |
+|---|---|
+| **Visuals** | Nocturne-themed tray icon: 4-pointed snowflake (cyan/magenta gradient). Active = pulse ring + center dot. Frozen = double pause bars + red accent. |
+| **Multi-monitor** | `OnlyFreezeOnRainmeterMonitor` (default **true**) — only freezes when the triggering window is on the same monitor as Rainmeter skins. |
+| **Process detection** | Prefers Rainmeter instance with visible windows (avoids picking wrong PID if multiple). |
+| **Config hot-reload** | `FileSystemWatcher` on `config.json` — external edits apply instantly. |
+| **Full-screen tolerance** | 2 px tolerance for borderless windowed games. |
+| **Suspend/resume reliability** | 3 retries × 50 ms delay — handles thread creation/destruction races. |
+| **Debug logging** | Rotating 1 MB log at `%APPDATA%\RainmeterFreeze\rainmeterfreeze.log`. |
+| **Debug log toggle** | Enable/disable from tray menu (`EnableDebugLog` in config). |
+| **Primary monitor detection** | Uses `GetShellWindow()` → reliable on multi-DPI setups. |
+| **Startup logging** | Logs "Rainmeter process not found (waiting for startup...)" instead of silent failure. |
+
+### Configuration
+
+File: `%APPDATA%\RainmeterFreeze\config.json`
+
+```json
+{
+  "FreezeAlgorithm": "Maximized",        // Maximized | NotOnDesktop | FullScreen
+  "FreezeMode": "Suspend",               // Suspend | LowPriority
+  "OnlyFreezeOnRainmeterMonitor": true,  // multi-monitor awareness
+  "EnableDebugLog": false                // toggle via tray menu
+}
+```
+
+- **FreezeAlgorithm**:
+  - `Maximized` — freeze when foreground window is maximized (default)
+  - `NotOnDesktop` — freeze when any non-desktop window is foreground
+  - `FullScreen` — freeze only when foreground window is true full-screen (borderless)
+- **FreezeMode**:
+  - `Suspend` — fully suspends all Rainmeter threads (zero CPU)
+  - `LowPriority` — sets Rainmeter to `BelowNormal` priority
+- **OnlyFreezeOnRainmeterMonitor**: `true` = only freeze if window is on same monitor as skins
+
+### Build from source
+
+**Prerequisites:**
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- Windows 10/11
+
+```powershell
+cd "_Source\RainmeterFreeze"
+dotnet build -c Release
+```
+
+Output: `bin\Release\net9.0-windows\RainmeterFreeze.exe` + dependencies.
+
+### Install
+
+```powershell
+# 1. Create install directory
+$dir = "$env:LOCALAPPDATA\RainmeterFreeze"
+New-Item -ItemType Directory -Path $dir -Force
+
+# 2. Copy build artifacts
+copy "bin\Release\net9.0-windows\RainmeterFreeze.exe" $dir
+copy "bin\Release\net9.0-windows\RainmeterFreeze.dll" $dir
+copy "bin\Release\net9.0-windows\H.NotifyIcon.dll" $dir
+copy "bin\Release\net9.0-windows\System.Drawing.Common.dll" $dir
+
+# 3. Auto-start at logon (no UAC prompt)
+# Option A: Use the provided shortcut
+copy "RainmeterFreeze.lnk" "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\"
+
+# Option B: Or create a scheduled task (run at logon, highest privileges)
+$action = New-ScheduledTaskAction -Execute "$dir\RainmeterFreeze.exe"
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Highest
+Register-ScheduledTask -TaskName "RainmeterFreeze" -Action $action -Trigger $trigger -Principal $principal -Force
+```
+
+### Tray menu
+
+Right-click the tray icon for:
+- **Freeze when…** — choose algorithm (Maximized / NotOnDesktop / FullScreen)
+- **Mode** — Suspend (zero CPU) or Low Priority
+- **Only on Rainmeter's monitor** — toggle multi-monitor awareness
+- **Debug Log** — enable/disable debug logging
+- **Exit** — quit (auto-resumes Rainmeter)
+
+### Log file
+
+`%APPDATA%\RainmeterFreeze\rainmeterfreeze.log` (rotates at 1 MB)
+
+```
+[2026-11-25 18:12:27.205] RainmeterFreeze started. Algorithm=Maximized, Mode=Suspend, OnlyMonitor=True
+[2026-11-25 18:12:30.123] Rainmeter process acquired: PID=12345
+[2026-11-25 18:15:00.456] FROZEN: Rainmeter suspended
+[2026-11-25 18:15:10.789] UNFROZEN: Rainmeter resumed
+```
+
+---
+
 ## Deploying on a fresh machine
 
 1. Install Rainmeter.
