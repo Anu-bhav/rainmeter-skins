@@ -7,31 +7,52 @@ namespace RainmeterFreeze.Native;
 /// </summary>
 static class ProcessManagement
 {
+    // Retry configuration for suspend/resume (handles thread creation/destruction races)
+    private const int MaxRetries = 3;
+    private const int RetryDelayMs = 50;
+    private const uint ThreadSuspendFailed = 0xFFFFFFFF;
+    private const int ThreadResumeFailed = -1;
+
     /// <summary>
-    /// Suspends a process by its ID.
+    /// Suspends a process by its ID with retry logic.
     /// </summary>
     /// <param name="pid">The target process's ID (PID).</param>
     internal static void SuspendProcess(int pid)
     {
-        var process = Process.GetProcessById(pid); // throws exception if process does not exist
+        var process = Process.GetProcessById(pid);
 
-        foreach (ProcessThread pT in process.Threads) {
-            nint pOpenThread = Kernel32.OpenThread(
-                Kernel32.ThreadAccess.SuspendResume,
-                false,
-                (uint)pT.Id
-            );
+        for (int attempt = 0; attempt < MaxRetries; attempt++) {
+            bool allSucceeded = true;
 
-            if (pOpenThread == 0)
-                continue;
+            foreach (ProcessThread pT in process.Threads) {
+                nint pOpenThread = Kernel32.OpenThread(
+                    Kernel32.ThreadAccess.SuspendResume,
+                    false,
+                    (uint)pT.Id
+                );
 
-            Kernel32.SuspendThread(pOpenThread);
-            Kernel32.CloseHandle(pOpenThread);
+                if (pOpenThread == 0) {
+                    allSucceeded = false;
+                    continue;
+                }
+
+                uint suspendResult = Kernel32.SuspendThread(pOpenThread);
+                if (suspendResult == ThreadSuspendFailed) { // Failed
+                    allSucceeded = false;
+                }
+                Kernel32.CloseHandle(pOpenThread);
+            }
+
+            if (allSucceeded)
+                return;
+
+            if (attempt < MaxRetries - 1)
+                Thread.Sleep(RetryDelayMs);
         }
     }
 
     /// <summary>
-    /// Resumes a previously suspended process by its ID.
+    /// Resumes a previously suspended process by its ID with retry logic.
     /// </summary>
     /// <param name="pid">The target process's ID (PID).</param>
     internal static void ResumeProcess(int pid)
@@ -41,22 +62,37 @@ static class ProcessManagement
         if (process.ProcessName == string.Empty)
             return;
 
-        foreach (ProcessThread pT in process.Threads) {
-            nint pOpenThread = Kernel32.OpenThread(
-                Kernel32.ThreadAccess.SuspendResume,
-                false,
-                (uint)pT.Id
-            );
+        for (int attempt = 0; attempt < MaxRetries; attempt++) {
+            bool allSucceeded = true;
 
-            if (pOpenThread == 0)
-                continue;
+            foreach (ProcessThread pT in process.Threads) {
+                nint pOpenThread = Kernel32.OpenThread(
+                    Kernel32.ThreadAccess.SuspendResume,
+                    false,
+                    (uint)pT.Id
+                );
 
-            int suspendCount;
-            do {
-                suspendCount = Kernel32.ResumeThread(pOpenThread);
-            } while (suspendCount > 0);
+                if (pOpenThread == 0) {
+                    allSucceeded = false;
+                    continue;
+                }
 
-            Kernel32.CloseHandle(pOpenThread);
+                int suspendCount;
+                do {
+                    suspendCount = Kernel32.ResumeThread(pOpenThread);
+                } while (suspendCount > 0 && suspendCount != ThreadResumeFailed);
+
+                if (suspendCount == ThreadResumeFailed)
+                    allSucceeded = false;
+
+                Kernel32.CloseHandle(pOpenThread);
+            }
+
+            if (allSucceeded)
+                return;
+
+            if (attempt < MaxRetries - 1)
+                Thread.Sleep(RetryDelayMs);
         }
     }
 }

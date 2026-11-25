@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using RainmeterFreeze.Native;
 using RainmeterFreeze.Enumerations;
 using RainmeterFreeze.Native.Enumerations;
@@ -14,6 +15,7 @@ static class Program
     static ControlTrayIcon trayIcon = null!;
     static Process? rainmeterProcess;
     static bool isFrozen;
+    static FileSystemWatcher? configWatcher;
 
     /// <summary>
     /// The path to the application's data folder.
@@ -44,6 +46,11 @@ static class Program
     /// Occurs when the "only freeze on Rainmeter's monitor" option has changed.
     /// </summary>
     public static event Action? OnlyMonitorChanged;
+
+    /// <summary>
+    /// Occurs when the freeze state changes (frozen/unfrozen).
+    /// </summary>
+    public static event Action<bool>? FreezeStateChanged;
 
     static void Main()
     {
@@ -77,6 +84,9 @@ static class Program
             Configuration = new AppConfiguration();
             Configuration.Save();
         }
+
+        // Set up config file watcher for external changes
+        SetupConfigWatcher();
 
         hooks = new();
         hooks.ForegroundChanged += static () => {
@@ -136,6 +146,48 @@ static class Program
         };
 
         trayIcon = new ControlTrayIcon();
+
+        // Subscribe to freeze state changes to update tray icon
+        FreezeStateChanged += trayIcon.OnFreezeStateChanged;
+
+        // Initial state log
+        LogDebug($"RainmeterFreeze started. Algorithm={Configuration.FreezeAlgorithm}, Mode={Configuration.FreezeMode}, OnlyMonitor={Configuration.OnlyFreezeOnRainmeterMonitor}");
+    }
+
+    static void SetupConfigWatcher()
+    {
+        try {
+            configWatcher = new FileSystemWatcher {
+                Path = DataFolderPath,
+                Filter = "config.json",
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
+                EnableRaisingEvents = true
+            };
+            configWatcher.Changed += (_, _) => {
+                // Debounce: wait a bit for write to complete
+                Thread.Sleep(100);
+                try {
+                    var newConfig = AppConfiguration.Load();
+                    bool algoChanged = newConfig.FreezeAlgorithm != Configuration.FreezeAlgorithm;
+                    bool modeChanged = newConfig.FreezeMode != Configuration.FreezeMode;
+                    bool monitorChanged = newConfig.OnlyFreezeOnRainmeterMonitor != Configuration.OnlyFreezeOnRainmeterMonitor;
+
+                    if (algoChanged || modeChanged || monitorChanged) {
+                        if (RefreshRainmeterProcess()) Unfreeze();
+                        Configuration = newConfig;
+                        if (algoChanged) FreezeAlgorithmChanged?.Invoke();
+                        if (modeChanged) FreezeModeChanged?.Invoke();
+                        if (monitorChanged) OnlyMonitorChanged?.Invoke();
+                        if (CheckIfShouldFreeze()) Freeze();
+                        LogDebug($"Config reloaded from file: Algorithm={Configuration.FreezeAlgorithm}, Mode={Configuration.FreezeMode}, OnlyMonitor={Configuration.OnlyFreezeOnRainmeterMonitor}");
+                    }
+                } catch (Exception ex) {
+                    LogDebug($"Config reload failed: {ex.Message}");
+                }
+            };
+        } catch (Exception ex) {
+            LogDebug($"Config watcher setup failed: {ex.Message}");
+        }
     }
 
     static void PerformAlreadyRunningCheck()
@@ -223,8 +275,10 @@ static class Program
 
         Span<char> className = stackalloc char[48];
         User32.GetClassName(hwnd, className);
+        int nullIdx = className.IndexOf('\0');
+        string cls = nullIdx >= 0 ? new string(className[..nullIdx]) : new string(className);
 
-        switch (className[..className.IndexOf('\0')]) {
+        switch (cls) {
             case "WorkerW":
             case "SysListView32":
             case "SHELLDLL_DefView":
@@ -260,7 +314,7 @@ static class Program
             // IsZoomed returns false when the maximize animation is playing,
             // and when not given enough time for Rainmeter to process that
             // its not in the foreground anymore, the widgets can stay on top.
-            Thread.Sleep(100);
+            Thread.Sleep(200); // Increased from 100ms
             return User32.IsZoomed(hwnd)
                 && ScreenInfo.IsForegroundOnPrimaryMonitor(
                     Configuration.OnlyFreezeOnRainmeterMonitor);
@@ -290,6 +344,8 @@ static class Program
         }
 
         isFrozen = true;
+        LogDebug("FROZEN: Rainmeter suspended");
+        FreezeStateChanged?.Invoke(true);
     }
 
     static void Unfreeze()
@@ -310,6 +366,8 @@ static class Program
         }
 
         isFrozen = false;
+        LogDebug("UNFROZEN: Rainmeter resumed");
+        FreezeStateChanged?.Invoke(false);
     }
 
     [MemberNotNullWhen(true, nameof(rainmeterProcess))]
@@ -330,12 +388,41 @@ static class Program
         if (processes.Length == 0) {
             // We couldn't find any Rainmeter processes...
             rainmeterProcess = null;
+            LogDebug("Rainmeter process not found (waiting for startup...)");
             return false;
         }
 
-        // At least one Rainmeter process has been found
-        rainmeterProcess = processes[0];
+        // If multiple instances, prefer the one with visible windows (the main instance)
+        Process? best = null;
+        foreach (var p in processes) {
+            if (HasVisibleWindow(p)) {
+                best = p;
+                break;
+            }
+        }
+        best ??= processes[0];
+
+        rainmeterProcess = best;
+        LogDebug($"Rainmeter process acquired: PID={rainmeterProcess.Id}");
         return true;
+    }
+
+    private static bool HasVisibleWindow(Process p)
+    {
+        try {
+            foreach (ProcessThread thread in p.Threads) {
+                bool found = false;
+                User32.EnumThreadWindows(thread.Id, (hwnd, _) => {
+                    if (User32.IsWindowVisible(hwnd)) {
+                        found = true;
+                        return false;
+                    }
+                    return true;
+                }, default);
+                if (found) return true;
+            }
+        } catch { }
+        return false;
     }
 
     /// <summary>
@@ -343,6 +430,7 @@ static class Program
     /// </summary>
     public static void Exit()
     {
+        configWatcher?.Dispose();
         trayIcon.Icon.Dispose();
         hooks.Dispose();
 
@@ -415,6 +503,30 @@ static class Program
                     MessageBoxType.OK | MessageBoxType.IconError
                 );
             }
+        }
+    }
+
+    // Debug logging with rotation (1 MB)
+    private static readonly object LogLock = new();
+    internal static void LogDebug(string message)
+    {
+        if (!Configuration.EnableDebugLog)
+            return;
+
+        lock (LogLock) {
+            try {
+                string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}";
+                var path = AppConfiguration.LogPath;
+
+                // Rotate if > 1 MB
+                if (File.Exists(path) && new FileInfo(path).Length > 1024 * 1024) {
+                    string bak = path + ".bak";
+                    if (File.Exists(bak)) File.Delete(bak);
+                    File.Move(path, bak);
+                }
+
+                File.AppendAllText(path, line + Environment.NewLine);
+            } catch { /* ignore logging failures */ }
         }
     }
 }

@@ -332,6 +332,20 @@ static partial class User32
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool UnhookWindowsHookEx(nint hhk);
+
+    /// <summary>
+    /// Determines whether the specified window handle identifies an existing window.
+    /// </summary>
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool IsWindow(nint hWnd);
+
+    /// <summary>
+    /// Determines whether the specified window is visible.
+    /// </summary>
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool IsWindowVisible(nint hWnd);
 }
 
 enum MonitorFromWindowFlags

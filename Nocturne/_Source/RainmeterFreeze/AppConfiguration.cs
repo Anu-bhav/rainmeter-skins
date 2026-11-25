@@ -22,6 +22,7 @@ partial class JsonContext : JsonSerializerContext;
 public class AppConfiguration
 {
     public static readonly string ConfigPath = Path.Combine(Program.DataFolderPath, "config.json");
+    public static readonly string LogPath = Path.Combine(Program.DataFolderPath, "rainmeterfreeze.log");
 
     /// <summary>
     /// The freezing algorithm to use.
@@ -40,6 +41,12 @@ public class AppConfiguration
     /// Rainmeter while its skins are still visible on the primary monitor.
     /// </summary>
     public bool OnlyFreezeOnRainmeterMonitor { get; set; } = true;
+
+    /// <summary>
+    /// When 'true', writes debug events (freeze/unfreeze, foreground changes) to a log file.
+    /// Log rotates at 1 MB. Default: false.
+    /// </summary>
+    public bool EnableDebugLog { get; set; } = false;
 
     /// <summary>
     /// Saves the configuration to the <see cref="ConfigPath"/>.

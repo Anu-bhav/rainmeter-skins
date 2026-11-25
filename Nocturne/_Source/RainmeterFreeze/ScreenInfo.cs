@@ -9,6 +9,9 @@ namespace RainmeterFreeze;
 /// </summary>
 public static class ScreenInfo
 {
+    // Tolerance for full-screen detection (borderless windowed games may be 1-2px off)
+    private const int FullScreenTolerance = 2;
+
     /// <summary>
     /// Checks if the foreground window is in full-screen mode.
     /// </summary>
@@ -31,10 +34,10 @@ public static class ScreenInfo
         var monitorRect = monitorInfo.Monitor;
 
         return (
-            rect.Left == monitorRect.Left &&
-            rect.Top == monitorRect.Top &&
-            rect.Right == monitorRect.Right &&
-            rect.Bottom == monitorRect.Bottom
+            Math.Abs(rect.Left - monitorRect.Left) <= FullScreenTolerance &&
+            Math.Abs(rect.Top - monitorRect.Top) <= FullScreenTolerance &&
+            Math.Abs(rect.Right - monitorRect.Right) <= FullScreenTolerance &&
+            Math.Abs(rect.Bottom - monitorRect.Bottom) <= FullScreenTolerance
         );
     }
 
@@ -44,7 +47,12 @@ public static class ScreenInfo
     /// </summary>
     private static nint PrimaryMonitor()
     {
-        // (0, 0) is always the top-left corner of the primary monitor.
+        // Use the shell window to reliably get the primary monitor
+        nint shellWnd = User32.GetShellWindow();
+        if (shellWnd != 0)
+            return User32.MonitorFromWindow(shellWnd, MonitorFromWindowFlags.DefaultToPrimary);
+
+        // Fallback: (0,0) is typically the primary monitor origin
         var origin = new Point { X = 0, Y = 0 };
         return User32.MonitorFromPoint(origin, MonitorFromWindowFlags.DefaultToPrimary);
     }

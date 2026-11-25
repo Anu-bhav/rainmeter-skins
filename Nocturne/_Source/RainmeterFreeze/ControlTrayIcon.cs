@@ -1,5 +1,7 @@
-﻿using RainmeterFreeze.Enumerations;
+﻿using System.Drawing;
+using RainmeterFreeze.Enumerations;
 using H.NotifyIcon.Core;
+using SDIcon = System.Drawing.Icon;
 
 namespace RainmeterFreeze;
 
@@ -17,6 +19,7 @@ public class ControlTrayIcon
     readonly PopupMenuItem modeLowPriorityToggle;
 
     readonly PopupMenuItem onlyRainmeterMonitorToggle;
+    readonly PopupMenuItem debugLogToggle;
 
     /// <summary>
     /// The actual icon displayed in the tray.
@@ -30,9 +33,9 @@ public class ControlTrayIcon
     public ControlTrayIcon()
     {
         trayIcon = new() {
-            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath ?? "")?.Handle ?? default,
+            Icon = CreateStateIconHandle(false), // Start with "unfrozen" icon
             Visibility = IconVisibility.Visible,
-            ToolTip = "RainmeterFreeze",
+            ToolTip = "RainmeterFreeze - Active",
             ContextMenu = new() {
                 Items = {
                     new PopupSubMenu("Freeze when..."),
@@ -83,6 +86,15 @@ public class ControlTrayIcon
 
                     new PopupMenuSeparator(),
 
+                    (
+                        debugLogToggle = new PopupMenuItem(
+                            "Debug Log",
+                            (_, _) => ToggleDebugLog()
+                        ) { Checked = Program.Configuration.EnableDebugLog }
+                    ),
+
+                    new PopupMenuSeparator(),
+
                     new PopupMenuItem("Exit", (_, _) => Program.Exit())
                 }
             }
@@ -95,7 +107,27 @@ public class ControlTrayIcon
         Program.OnlyMonitorChanged += OnOnlyMonitorChanged;
     }
 
-    void OnFreezeAlgorithmChanged()
+    /// <summary>
+    /// Called when freeze state changes (frozen/unfrozen).
+    /// Updates the tray icon to show current state.
+    /// </summary>
+    public void OnFreezeStateChanged(bool frozen)
+    {
+        try {
+            // Update icon with state indicator
+            trayIcon.Icon = CreateStateIconHandle(frozen);
+            trayIcon.ToolTip = frozen ? "RainmeterFreeze - FROZEN" : "RainmeterFreeze - Active";
+        } catch { /* ignore icon update failures */ }
+    }
+
+    private void ToggleDebugLog()
+    {
+        Program.Configuration.EnableDebugLog = !Program.Configuration.EnableDebugLog;
+        Program.Configuration.Save();
+        debugLogToggle.Checked = Program.Configuration.EnableDebugLog;
+    }
+
+    private void OnFreezeAlgorithmChanged()
     {
         var cfg = Program.Configuration;
         algoNotOnDesktopToggle.Checked = cfg.FreezeAlgorithm == FreezeAlgorithm.NotOnDesktop;
@@ -103,15 +135,49 @@ public class ControlTrayIcon
         algoFullscreenToggle.Checked = cfg.FreezeAlgorithm == FreezeAlgorithm.FullScreen;
     }
 
-    void OnFreezeModeChanged()
+    private void OnFreezeModeChanged()
     {
         var cfg = Program.Configuration;
         modeSuspendToggle.Checked = cfg.FreezeMode == FreezeMode.Suspend;
         modeLowPriorityToggle.Checked = cfg.FreezeMode == FreezeMode.LowPriority;
     }
 
-    void OnOnlyMonitorChanged()
+    private void OnOnlyMonitorChanged()
     {
         onlyRainmeterMonitorToggle.Checked = Program.Configuration.OnlyFreezeOnRainmeterMonitor;
+    }
+
+    /// <summary>
+    /// Creates a tray icon handle with a visual state indicator.
+    /// Green dot = active, Red dot = frozen.
+    /// </summary>
+    private static nint CreateStateIconHandle(bool frozen)
+    {
+        try {
+            // Get base icon
+            var baseIcon = SDIcon.ExtractAssociatedIcon(Environment.ProcessPath ?? "");
+            if (baseIcon == null) return SystemIcons.Application.Handle;
+
+            // Create a composite icon with state indicator
+            var bmp = new Bitmap(16, 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp)) {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(baseIcon.ToBitmap(), 0, 0, 16, 16);
+
+                // Draw state dot in bottom-right corner
+                var dotColor = frozen ? Color.Red : Color.LimeGreen;
+                using (var brush = new SolidBrush(dotColor)) {
+                    g.FillEllipse(brush, 10, 10, 6, 6);
+                }
+                // White outline for visibility
+                using (var pen = new Pen(Color.White, 1)) {
+                    g.DrawEllipse(pen, 10, 10, 5, 5);
+                }
+            }
+            return SDIcon.FromHandle(bmp.GetHicon()).Handle;
+        } catch {
+            return SystemIcons.Application.Handle;
+        }
     }
 }
