@@ -82,7 +82,7 @@ default scale MONDAY measures 1674×296 (panel 1674×290); TUESDAY is wider at
 **Fixed screen position.** The window width changes per day, so a fixed
 `WindowX` cannot keep it centred. `letters.lua` repositions the window instead:
 centred horizontally, with its top edge at `TopFraction` of the work-area height
-from the top (default `0.3333` = one-third down). Set `CenterWindow=0` to leave
+from the top (default `0.2` = one-fifth down). Set `CenterWindow=0` to leave
 the position alone, or change `TopFraction` to move it up/down.
 
 **Hover glow.** At rest the clock is subtle — background panel at 4% opacity,

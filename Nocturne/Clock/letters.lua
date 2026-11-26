@@ -193,7 +193,7 @@ function RepositionWindow(winW)
     -- skins live on the primary monitor, so centring there is correct.
     local workW = numVar('WORKAREAWIDTH', numVar('SCREENWIDTH', 2560))
     local workH = numVar('WORKAREAHEIGHT', numVar('SCREENHEIGHT', 1440))
-    local frac  = numVar('TopFraction', 0.3333)
+    local frac  = numVar('TopFraction', 0.2)
 
     local targetX = math.floor((workW - winW) / 2 + 0.5)
     local targetY = math.floor(workH * frac + 0.5)

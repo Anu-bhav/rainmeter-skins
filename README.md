@@ -111,7 +111,7 @@ wider at 1732×296.
 centred horizontally and pinned near the top by `letters.lua` (a fixed `WindowX`
 can't centre a variable-width window). It exposes two variables: `CenterWindow`
 (1 = stay centred) and `TopFraction` (where the top edge sits, as a fraction of
-the work-area height from the top — default `0.3333`, i.e. one-third down).
+the work-area height from the top — default `0.2`, i.e. one-fifth down).
 
 **Hover glow.** At rest the clock is subtle — background panel at 4% opacity,
 text at 39%. On hover the skin jumps to full opacity (`!SetTransparency 255`),
