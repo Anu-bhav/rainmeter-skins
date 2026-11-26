@@ -107,6 +107,12 @@ the glyph ink, so the margins above/below and before/after the word are equal.
 At the default scale MONDAY measures 1674×296 (panel 1674×290); TUESDAY is
 wider at 1732×296.
 
+**Fixed screen position.** Because the width changes per day, the window is kept
+centred horizontally and pinned near the top by `letters.lua` (a fixed `WindowX`
+can't centre a variable-width window). It exposes two variables: `CenterWindow`
+(1 = stay centred) and `TopFraction` (where the top edge sits, as a fraction of
+the work-area height from the top — default `0.3333`, i.e. one-third down).
+
 **Hover glow.** At rest the clock is subtle — background panel at 4% opacity,
 text at 39%. On hover the skin jumps to full opacity (`!SetTransparency 255`),
 revealing the solid black panel and a vivid magenta shadow glow (`#ShadowColor`,

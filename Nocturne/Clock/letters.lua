@@ -31,6 +31,11 @@ local REF_SIZE = 229.0
 -- 4/3 too wide, which closes the gaps and lets A/Y touch in "DAY".
 local POINTS_TO_PIXELS = 96.0 / 72.0
 
+-- Last window position applied by RepositionWindow, so we only move the window
+-- when the target actually changes (avoids a bang and an ini write every tick).
+local lastWinX = nil
+local lastWinY = nil
+
 local GLYPH = {
     A = { l =  12, r = 199 },
     B = { l =   0, r = 157 },
@@ -62,6 +67,10 @@ local GLYPH = {
 
 function Initialize()
     mDay = SKIN:GetMeasure('MeasureDay')
+    -- Reset the last-applied window position so the first Update after a load
+    -- or refresh always repositions the window.
+    lastWinX = nil
+    lastWinY = nil
 end
 
 -- Reads a skin variable that may contain a Rainmeter formula (e.g. "(12*4.4)")
@@ -166,5 +175,32 @@ function Update()
         SKIN:Bang('!SetVariable', 'DayX' .. i, 0)
     end
 
+    -- Keep the window centred horizontally with its top edge a fixed fraction
+    -- down the work area. bgW is the exact window width for this day, so the
+    -- centring stays correct as the word changes width.
+    RepositionWindow(bgW)
+
     return day
+end
+
+-- Moves the skin window so it is horizontally centred on the work area and its
+-- top edge sits at TopFraction of the work-area height. Only issues a bang when
+-- the target pixel position changes, so a static day costs nothing.
+function RepositionWindow(winW)
+    if numVar('CenterWindow', 1) ~= 1 then return end
+
+    -- Built-in variables give the primary screen / work area. The Nocturne
+    -- skins live on the primary monitor, so centring there is correct.
+    local workW = numVar('WORKAREAWIDTH', numVar('SCREENWIDTH', 2560))
+    local workH = numVar('WORKAREAHEIGHT', numVar('SCREENHEIGHT', 1440))
+    local frac  = numVar('TopFraction', 0.3333)
+
+    local targetX = math.floor((workW - winW) / 2 + 0.5)
+    local targetY = math.floor(workH * frac + 0.5)
+
+    if targetX ~= lastWinX or targetY ~= lastWinY then
+        SKIN:Bang('!SetWindowPosition', targetX, targetY)
+        lastWinX = targetX
+        lastWinY = targetY
+    end
 end
